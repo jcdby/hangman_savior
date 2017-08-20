@@ -25,11 +25,13 @@ class Savior {
 
 
   learnEnglish(path) {
-    if(arguments.length === 1) {
-      path = path.trim();
-    }
     if(arguments.length === 0 || !path ){
-      throw Error('error');
+      throw Error('You should input a path!');
+    }
+    if(arguments.length === 1 && typeof path === 'string') {
+      path = path.trim();
+    }else{
+      throw new Error('The path should be String!');
     }
     if(!fs.existsSync(path)){
       throw new Error('file not existed!');

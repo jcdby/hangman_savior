@@ -25,7 +25,13 @@ describe('Savior Test', ()=>{
     expect(() => {savior.learnEnglish(' ')}).toThrow();
   });
 
-  test('Should not throw error when learnEnglish get a path(validated string) parameter.', () => {
+  test('Should throw error when the type of path is not String.', () => {
+    expect(() => {
+      savior.learnEnglish(1);
+    }).toThrowError('The path should be String!')
+  })
+
+  test('Should not throw error when learnEnglish get a path(validated path string) parameter.', () => {
     expect(() => {savior.learnEnglish('./words_alpha.txt')}).not.toThrow();
   });
 
@@ -34,6 +40,7 @@ describe('Savior Test', ()=>{
       savior.learnEnglish('noFile');
     }).toThrow();
   });
+
 
   test('Should get knowledge about english.', () => {
       let dict_file_path = './words_alpha.txt';

@@ -59,6 +59,41 @@ class Savior {
     return this.saviorId;
   }
 
+  updateDictByWordLength(old_dict, word_length) {
+    if(!Array.isArray(old_dict)){
+      throw new Error('First parameter should be a array!')
+    }
+    if(arguments.length === 2 && typeof word_length !== 'number'){
+      throw new Error('Second parameter should be a number!');
+    }
+
+    let new_dict = []
+    old_dict.forEach((el) => {
+      if(el.length === word_length){
+        new_dict.push(el);
+      }
+    })
+
+    return new_dict;
+  }
+
+  updateDictByLetter(old_dict, letter, position){
+    if(!Array.isArray(old_dict)){
+      throw new Error('First parameter should be a array!');
+    }
+    if(arguments.length === 2 && typeof letter !== 'string'){
+      throw new Error('Second parameter should be a string');
+    }
+    if(arguments.length === 3 && typeof position !== 'number'){
+      throw new Error('The Third parameter should be a number');
+    }
+    let new_dict = [];
+    new_dict = old_dict.filter((el) => {
+      return !el.includes(letter);
+    })
+    return new_dict;
+  }
+
 
   startGame(){
 

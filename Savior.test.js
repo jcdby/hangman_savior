@@ -8,7 +8,7 @@ describe('Savior Test', ()=>{
 
   beforeEach(() => {
     Savior = require('./Savior');
-    savior = new Savior('jcdby@hotmail.com');
+    savior = new Savior('example@example.com');
     wordToGuess = '*****';
     savior.setLengthByWordToGuess(wordToGuess);
   })
@@ -17,9 +17,10 @@ describe('Savior Test', ()=>{
     expect(savior).not.toBeNull();
   });
 
+
   test('Should have savior id', () => {
     let saviorId = savior.getSaviorId();
-    expect(saviorId).toBe("jcdby@hotmail.com");
+    expect(saviorId).toBe("example@example.com");
   });
 
 

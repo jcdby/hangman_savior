@@ -1,7 +1,10 @@
+let fs = require('fs');
+
 class Savior {
 
   constructor(saviorId) {
     this.saviorId = saviorId;
+    this.myKnowledge = {};
   }
 
 
@@ -18,6 +21,33 @@ class Savior {
 
 
 
+  }
+
+
+  learnEnglish(path) {
+    if(arguments.length === 1) {
+      path = path.trim();
+    }
+    if(arguments.length === 0 || !path ){
+      throw Error('error');
+    }
+    if(!fs.existsSync(path)){
+      throw new Error('file not existed!');
+    }
+
+
+
+
+    this.myKnowledge = {
+      dict: {},
+      lettersFreq: [],
+      backupFreq: []
+    }
+  }
+
+
+  getKnowledge() {
+    return this.myKnowledge;
   }
 
 

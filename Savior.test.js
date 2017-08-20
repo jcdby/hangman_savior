@@ -4,10 +4,13 @@ describe('Savior Test', ()=>{
 
   let Savior;
   let savior;
+  let wordToGuess; 
 
   beforeEach(() => {
     Savior = require('./Savior');
     savior = new Savior('jcdby@hotmail.com');
+    wordToGuess = '*****';
+    savior.setLengthByWordToGuess(wordToGuess);
   })
 
   test('Should Savior not null', () => {
@@ -18,6 +21,13 @@ describe('Savior Test', ()=>{
     let saviorId = savior.getSaviorId();
     expect(saviorId).toBe("jcdby@hotmail.com");
   });
+
+
+  test('Should get the length of the word to be guessed.', () => {
+    let lengthOfWordToGuess = savior.getLengthForWordToGuess();
+    expect(lengthOfWordToGuess).toEqual(wordToGuess.length);
+    
+  })
 
 
   test('Should throw a error when not to give learnEnglish method a parameter about path.', () => {
@@ -125,6 +135,22 @@ describe('Savior Test', ()=>{
     expect(() => {
       let new_dict = savior.updateDictByLetter([], 'b', '5');
     }).toThrowError('The Third parameter should be a number');
+  });
+
+  test('Should return right new dict according to the correct letter and its position.', () => {
+    let old_dict = ['good','gooa','bood','cood','sbjd','fjkw','sbbe','word', 'wore','worl'];
+    let correct_letter = 'd';
+    let correct_position = 3; //0-based range in a word;
+    let expect_dict = ['good','bood','cood','sbjd','word'];
+    savior.setLengthByWordToGuess('****');
+
+    let new_dict = savior.updateDictByLetter(old_dict, correct_letter, correct_position);
+
+    for(let i = 0; i < expect_dict.length; i++){
+      expect(new_dict[i]).toEqual(expect_dict[i]);
+    }
+
+
   })
 
 

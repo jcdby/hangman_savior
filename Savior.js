@@ -5,6 +5,7 @@ class Savior {
   constructor(saviorId) {
     this.saviorId = saviorId;
     this.myKnowledge = {};
+    this.length = 0;
   }
 
 
@@ -21,6 +22,15 @@ class Savior {
 
 
 
+  }
+
+
+  setLengthByWordToGuess(wordToGuess){
+    this.length = wordToGuess.length;    
+  }
+
+  getLengthForWordToGuess(){
+    return this.length;
   }
 
 
@@ -88,9 +98,27 @@ class Savior {
       throw new Error('The Third parameter should be a number');
     }
     let new_dict = [];
-    new_dict = old_dict.filter((el) => {
-      return !el.includes(letter);
-    })
+
+    if(arguments.length === 2){
+      new_dict = old_dict.filter((el) => {
+        return !el.includes(letter);
+      })
+    }
+    if(arguments.length === 3){
+      let reg = [];
+      for(let i = 0; i < this.getLengthForWordToGuess(); i++){
+        reg.push('.');
+      }
+      reg[position] = letter; //zero-based range
+      reg = reg.join(''); 
+
+      reg = new RegExp(reg, 'i','g');
+
+      new_dict = old_dict.filter((el) => {
+        return reg.test(el);
+      })
+
+    }
     return new_dict;
   }
 

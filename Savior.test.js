@@ -74,8 +74,9 @@ describe('Savior Test', ()=>{
   test('Should update savior`s dict by the length of the word to be gussed.', () => {
     let old_dict = ['good','a','bb','cooler','sdfjoijeifj','fjkdjjfd','ss','wordl', 'word','world'];
     let expect_dict = ['wordl', 'world'];
-    let new_dict = savior.updateDictByWordLength(old_dict,5);
-    expect(new_dict.length).toEqual(2);
+    savior.setLengthByWordToGuess('*****');
+    let new_dict = savior.updateDictByWordLength(old_dict,savior.getLengthForWordToGuess());
+    expect(new_dict.length).toEqual(expect_dict.length);
 
     for(let i = 0; i < new_dict.length; i++){
       expect(new_dict[i]).toEqual(expect_dict[i]);
@@ -108,7 +109,7 @@ describe('Savior Test', ()=>{
     let expect_dict = ['good','a','cooler','fjkdjjfd','wordl', 'word','world']
     let wrong_letter = 'b';
     let new_dict = savior.updateDictByLetter(old_dict, wrong_letter);
-    expect(new_dict.length).toEqual(7);
+    expect(new_dict.length).toEqual(expect_dict.length);
 
     for(let i = 0; i < expect_dict.length; i++){
       expect(new_dict[i]).toEqual(expect_dict[i]);

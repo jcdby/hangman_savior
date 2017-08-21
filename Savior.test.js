@@ -191,8 +191,8 @@ describe('Savior Test', ()=>{
     test('Should return the first character in the backup freq collection and update the backup freq collection when the dict updated is empty.', () =>{
       let dict = [];
       let backup_letter_freq = 'eabiqwr';
-      let updated_backup_letter_freq  = 'abiqwr';
-      let expect_next_letter = 'e';
+      let updated_backup_letter_freq  = backup_letter_freq.slice(1);
+      let expect_next_letter = backup_letter_freq.charAt(0);
 
       savior.setBackupLetterFreq(backup_letter_freq);
 
@@ -222,9 +222,13 @@ describe('Savior Test', ()=>{
         savior.setBackupLetterFreq([]);
       }).toThrowError('The parameter should be a string!');
     })
-
-
   }); 
+
+  describe('5. Savior saves the man to be hanged.', () => {
+    test('Shuld return right information when start game.', () => {
+      
+    })
+  });
 
 
 

@@ -1,19 +1,19 @@
 
 describe('Request test.', () => {
-  test('Should get right response when request to start game.', () => {
+  test('Should return right response from sever when using real request', () => {
     let request = require('./request');
-    let url = "https://strikingly-hangman.herokuapp.com/game/on";
     let data = {
-      "playerId": "test@example.com",
-      "action" : "startGame"
+      playerID: 'test@example.com',
+      action: 'startGame'
     };
-
     let expect_result = {
-      message: "Player does not exist"
-    }
-
-    expect(request(url, data)).resolves.toEqual(JSON.parse(expect_result));
-    
-
+      message: 'Player does not exist'
+    };
+    expect(request(data)).resolves.toEqual(expect_result);
   })
+  ;
+  test('Should get right response when request to start game.', () => {
+    expect(request(correct_data)).resolves.toEqual(correct_expect_result);
+  });
+
 });

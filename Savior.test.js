@@ -240,15 +240,17 @@ describe('Savior Test', ()=>{
               });
     });
 
-    test('Should reject error when start game if player id does not exist.', () => {
+    test('Should get expection message when start game if player id does not exist.', () => {
       let wrong_playerId = 'example@example.com';
       let savior = new Savior();
       jest.mock('./request.js');
       savior.setSaviorId(wrong_playerId);
       return expect(savior.startGame()).resolves.toEqual({
         message: 'Player does not exist'
-      })
-    })
+      });
+    });
+
+    
   });
 
 

@@ -1,4 +1,5 @@
 let fs = require('fs');
+let request = require('./request');
 
 class Savior {
 
@@ -183,9 +184,13 @@ class Savior {
 
 
   startGame(){
-    return new Promise(function(resolve, reject) {
-      resolve({sessionId: 'rightID'})
-    })
+    let playerID = this.getSaviorId();
+    let action = 'startGame';
+    let data = {
+      playerID: playerID,
+      action: action
+    }
+    return request(data);
   }
 
   getWord(){

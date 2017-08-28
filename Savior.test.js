@@ -5,10 +5,12 @@ describe('Savior Test', ()=>{
   let Savior;
   let savior;
   let wordToGuess; 
+  let playerId  = 'jcdby@hotmail.com'
 
   beforeEach(() => {
     Savior = require('./Savior');
-    savior = new Savior('example@example.com');
+    savior = new Savior();
+    savior.setSaviorId(playerId);
     wordToGuess = '*****';
     savior.setLengthByWordToGuess(wordToGuess);
   });
@@ -22,8 +24,14 @@ describe('Savior Test', ()=>{
 
     test('Should have savior id', () => {
       let saviorId = savior.getSaviorId();
-      expect(saviorId).toBe("example@example.com");
+      expect(saviorId).toBe(playerId);
     });
+
+    test('Should return a right savior id after using savior id set method.', () => {
+      let saviorId = 'example@example.com';
+      savior.setSaviorId(saviorId);
+      expect(savior.getSaviorId()).toEqual(saviorId);
+    })
 
 
     test('Should get the length of the word to be guessed.', () => {
@@ -225,8 +233,21 @@ describe('Savior Test', ()=>{
   }); 
 
   describe('5. Savior saves the man to be hanged.', () => {
-    test('Shuld return right information when start game.', () => {
-      
+    test('Shuld return right information when start game if player id exist.', () => {
+      return savior.startGame()
+              .then(res => {
+                expect(res.sessionId).toEqual(expect.any(String));
+              });
+    });
+
+    test('Should throw error when start game if player id does not exist.', () => {
+      let wrong_playerId = 'example@example.com';
+      let savior = new Savior();
+      savior.setSaviorId(wrong_playerId);
+      return savior.startGame()
+              .catch(err => {
+                
+              })
     })
   });
 

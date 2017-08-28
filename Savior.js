@@ -9,20 +9,6 @@ class Savior {
   }
 
 
-  request(data){
-    let options = {
-      protocol: "https",
-      hostname: "strikingly-hangman.herokuapp.com",
-      path: "/game/on",
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-
-
-
-  }
 
   getNextLetterToGuess(dict) {
     let nextLetter = 'b';
@@ -134,6 +120,10 @@ class Savior {
     return this.saviorId;
   }
 
+  setSaviorId(id) {
+    this.saviorId = id;
+  }
+
   updateDictByWordLength(old_dict, word_length) {
     if(!Array.isArray(old_dict)){
       throw new Error('First parameter should be a array!')
@@ -193,7 +183,9 @@ class Savior {
 
 
   startGame(){
-
+    return new Promise(function(resolve, reject) {
+      resolve({sessionId: 'rightID'})
+    })
   }
 
   getWord(){

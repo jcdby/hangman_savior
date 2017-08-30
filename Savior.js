@@ -10,7 +10,6 @@ class Savior {
   }
 
 
-
   getNextLetterToGuess(dict) {
     let nextLetter = 'b';
     if(!Array.isArray(dict)){
@@ -85,7 +84,6 @@ class Savior {
     return this.length;
   }
 
-
   learnEnglish(path) {
     if(arguments.length === 0 || !path ){
       throw new Error('You should input a path!');
@@ -113,9 +111,6 @@ class Savior {
   getKnowledge() {
     return this.myKnowledge;
   }
-
-
-  
 
   getSaviorId() {
     return this.saviorId;
@@ -194,19 +189,50 @@ class Savior {
     return request(data)
   }
 
-  getNextWord(){
+  getNextWord(sessionId){
+    let action = 'nextWord';
+    
+    let data = {
+      sessionId: sessionId,
+      action: action
+    };    
+    
+    return request(data);
 
   }
 
   makeGuess(sessionId){
     let action = 'guessWord';
+    //set the default next letter to guess to a
+    let letterToGuess = 'A';
+
+    //the logic to get the letter to guess
+    /*
+    do something here.
+    */
+
+
+    //make sure the letter be upper case;
+    letterToGuess = letterToGuess.toUpperCase();
+
     let data = {
       sessionId: sessionId,
       action: action
-    }    
+      guess: letterToGuess
+    };
+    
+    return request(data);
   }
 
-  getResult(){
+  getResult(sessionId){
+    let action = 'getResult';
+    let data = {
+      sessionId: sessionId,
+      action: action
+    };
+
+
+    return request(data);
 
   }
 
@@ -214,17 +240,32 @@ class Savior {
 
   }
 
-  guessingWord(sessionId){
-    this.getNextWord(sessionId)
+  
+  gettingNextWordLoop(sessionId){
+    return this.getNextWord(sessionId)
       then(res => {
         if(res.message !== 'No more word to guess'){
-          this.makeGuess(sessionId);
+          this.makingGuessLoop(sessionId);
         }else {
           return this.getResult()
         }
-      })
+      });
   }
 
+  makingGuessLoop(sessionId){
+    return this.makeGuess(sessionId)
+             .then(res => {
+               if(res.message !== 'No more guess left'){
+                 this.gettingNextWordLoop(sessionId);
+               }else {
+                 if(res.data && res.data.word && res.data.word.includes('*')){
+                   this.makingGuessLoop(sessionId);
+                 }else {
+                   this.gettingNextWordLoop(sessionId);
+                 }
+               }
+             })
+  }
 
 
   play(){
@@ -246,10 +287,11 @@ class Savior {
         return this.guessingWord(sessionId);
       })
       .then(guess_result => {
-
+        //print out guess_result
+        console.info(JSON.stringify(guess_result));
       })
   }
 
 }
 
-module.exports = Savior
+module.exports = Savior;

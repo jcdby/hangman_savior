@@ -190,15 +190,20 @@ class Savior {
       playerID: playerID,
       action: action
     }
-    return request(data);
+
+    return request(data)
   }
 
-  getWord(){
+  getNextWord(){
 
   }
 
-  makeGuess(){
-
+  makeGuess(sessionId){
+    let action = 'guessWord';
+    let data = {
+      sessionId: sessionId,
+      action: action
+    }    
   }
 
   getResult(){
@@ -207,6 +212,42 @@ class Savior {
 
   submitResult(){
 
+  }
+
+  guessingWord(sessionId){
+    this.getNextWord(sessionId)
+      then(res => {
+        if(res.message !== 'No more word to guess'){
+          this.makeGuess(sessionId);
+        }else {
+          return this.getResult()
+        }
+      })
+  }
+
+
+
+  play(){
+    let res_startGame = this.startGame()
+      .then(res => {
+        if(res.message && res.message === 'Player does not exist'){
+          //由于提供错误的player ID，抛出异常。
+          throw new Error(res.message);
+        }        
+        
+        if(!res.sessionId){
+          throw new Error('Session ID does not exist! Please Check it.')
+        }
+        
+        return res.sessionId;
+      })
+      .then(sessionId => {
+        //This part is only for guessing word.
+        return this.guessingWord(sessionId);
+      })
+      .then(guess_result => {
+
+      })
   }
 
 }

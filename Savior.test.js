@@ -232,26 +232,40 @@ describe('Savior Test', ()=>{
     })
   }); 
 
-  describe('5. Savior saves the man to be hanged.', () => {
-    test('Shuld return right information when start game if player id exist.', () => {
-      return savior.startGame()
-              .then(res => {
-                expect(res.sessionId).toEqual(expect.any(String));
-              });
-    });
+  describe('5. Savior will save the man to be hanged.', () => {
+    // test('Should return error message when savior play game with wrong player id.', () => {
+    //   const err_message = 'Player does not exist';
+    //   const spy_startGame = jest.spyOn(savior, 'startGame').mockImplementation(() => {
+    //     let aPromise = new Promise((resolve) => {
+    //       resolve({message: err_message})
+    //     });
+    //     aPromise.then(res => {
+    //       return res;
+    //     })
+    //   });
+    //   expect(() => savior.play()).toThrowError(err_message);   
 
-    test('Should get expection message when start game if player id does not exist.', () => {
-      let wrong_playerId = 'example@example.com';
-      let savior = new Savior();
-      jest.mock('./request.js');
-      savior.setSaviorId(wrong_playerId);
-      return expect(savior.startGame()).resolves.toEqual({
-        message: 'Player does not exist'
-      });
-    });
+
+    // });
+
+
 
     
   });
+
+
+  describe('6. Utils test',() => {
+    // test('Should return info from async function synchronously.', () => {
+    //   let data = 'data';
+    //   let expect_result = data;
+    //   let result = savior.await(() => {
+    //     return new Promise((resolve) => {
+    //       resolve(data);
+    //     })
+    //   });
+    //   expect(result).toEqual(expect_result);
+    // })
+  })
 
 
 

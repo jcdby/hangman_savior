@@ -217,7 +217,7 @@ class Savior {
 
     let data = {
       sessionId: sessionId,
-      action: action
+      action: action,
       guess: letterToGuess
     };
     
@@ -244,11 +244,14 @@ class Savior {
   gettingNextWordLoop(sessionId){
     return this.getNextWord(sessionId)
       then(res => {
-        if(res.message !== 'No more word to guess'){
+        console.log(res.message);
+        if(res.message && res.message !== 'No more word to guess'){
           this.makingGuessLoop(sessionId);
-        }else {
-          return this.getResult()
         }
+      })
+      .then(() => {
+        console.info('start to getting result')
+        return this.getResult();
       });
   }
 
@@ -269,26 +272,23 @@ class Savior {
 
 
   play(){
-    let res_startGame = this.startGame()
+    return this.startGame()
       .then(res => {
         if(res.message && res.message === 'Player does not exist'){
           //由于提供错误的player ID，抛出异常。
           throw new Error(res.message);
         }        
         
-        if(!res.sessionId){
-          throw new Error('Session ID does not exist! Please Check it.')
-        }
-        
         return res.sessionId;
       })
       .then(sessionId => {
         //This part is only for guessing word.
-        return this.guessingWord(sessionId);
-      })
-      .then(guess_result => {
-        //print out guess_result
-        console.info(JSON.stringify(guess_result));
+        return this.gettingNextWordLoop(sessionId)
+                 .then(guess_result => {
+                  //print out guess_result
+                  console.info(JSON.stringify(guess_result));
+                  return guess_result;
+                 });
       })
   }
 

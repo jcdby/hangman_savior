@@ -233,21 +233,62 @@ describe('Savior Test', ()=>{
   }); 
 
   describe('5. Savior will save the man to be hanged.', () => {
-    // test('Should return error message when savior play game with wrong player id.', () => {
-    //   const err_message = 'Player does not exist';
-    //   const spy_startGame = jest.spyOn(savior, 'startGame').mockImplementation(() => {
-    //     let aPromise = new Promise((resolve) => {
-    //       resolve({message: err_message})
-    //     });
-    //     aPromise.then(res => {
-    //       return res;
-    //     })
-    //   });
-    //   expect(() => savior.play()).toThrowError(err_message);   
+    test('Should return error message when savior play game with wrong player id.', () => {
+      const err_message = 'Player does not exist';
+      const spy_startGame = jest.spyOn(savior, 'startGame').mockImplementation(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve({message: err_message})
+          }, 10);
+        });
+      });
+      return savior.play().catch((err) => {
+        expect(err).toEqual(new Error(err_message));
+      });   
 
+    });
 
-    // });
+    test('Should return result when threr is no word to guess.', () => {
+      const fake_result = {
+        message: "GAME OVER",
+        sessionId: "3f0421bb5cb56631c170a35da90161d2",
+        data: {
+          playerId: "test@example.com",
+          sessionId: "3f0421bb5cb56631c170a35da90161d2",
+          totalWordCount: 80,
+          correctWordCount: 77,
+          totalWrongGuessCount: 233,
+          score: 1307,
+          datetime: "2014-10-28 11:45:58"
+        }
+      };
+      const spy_startGame = jest.spyOn(savior, 'startGame').mockImplementation(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve({sessionId:'1111'});
+          }, 10);
+        })
+      });
+      const spy_getNextWord = jest.spyOn(savior, 'getNextWord').mockImplementation(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve({message: 'No more word to guess'});
+          }, 10);
+        });
+      });
+      const spy_getResult = jest.spyOn(savior, 'getResult').mockImplementation(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve(fake_result);
+          }, 10);
+        });
+      });
 
+      return savior.play().then(res => {
+        expect(res).toEqual(fake_result);
+      })
+
+    })
 
 
     

@@ -244,27 +244,24 @@ class Savior {
   gettingNextWordLoop(sessionId){
     return this.getNextWord(sessionId)
       .then(res => {
-        console.log(res.message);
-        if(res.message && res.message !== 'No more word to guess'){
-          return this.makingGuessLoop(sessionId);
+        console.info(res);
+        if(!res.message && res.message !== 'No more word to guess'){
+           return this.makingGuessLoop(sessionId);
         }
       })
-      .then(() => {
-        console.info('start to getting result')
-        return this.getResult();
-      });
   }
 
   makingGuessLoop(sessionId){
     return this.makeGuess(sessionId)
              .then(res => {
-               if(res.message !== 'No more guess left'){
-                 this.gettingNextWordLoop(sessionId);
+               console.info(res);
+               if(res.message && res.message !== 'No more guess left'){
+                 return this.gettingNextWordLoop(sessionId);
                }else {
-                 if(res.data && res.data.word && res.data.word.includes('*')){
-                   this.makingGuessLoop(sessionId);
+                 if(res.data && res.data.word &&  res.data.word.includes('*')){
+                   return this.makingGuessLoop(sessionId);
                  }else {
-                   this.gettingNextWordLoop(sessionId);
+                   return this.gettingNextWordLoop(sessionId);
                  }
                }
              })
@@ -274,6 +271,8 @@ class Savior {
   play(){
     return this.startGame()
       .then(res => {
+        console.info('start to play game!')
+        console.info(res);
         if(res.message && res.message === 'Player does not exist'){
           //由于提供错误的player ID，抛出异常。
           throw new Error(res.message);
@@ -285,9 +284,14 @@ class Savior {
         //This part is only for guessing word.
         return this.gettingNextWordLoop(sessionId)
       })
+      .then(() => {
+        console.info('start to getting result')
+        return this.getResult();
+      })
       .then(guess_result => {
         //print out guess_result
         console.info(JSON.stringify(guess_result));
+        console.info('one game finished')
         return guess_result;
       });
   }

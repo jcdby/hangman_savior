@@ -248,7 +248,7 @@ describe('Savior Test', ()=>{
 
     });
 
-    test('Should return result when threr is no word to guess.', () => {
+    test('Should return result when there is no word to guess.', () => {
       const fake_result = {
         message: "GAME OVER",
         sessionId: "3f0421bb5cb56631c170a35da90161d2",
@@ -286,27 +286,193 @@ describe('Savior Test', ()=>{
 
       return savior.play().then(res => {
         expect(res).toEqual(fake_result);
+      });
+
+    });
+
+    test('Should get result when there is no more guess left and there is no more word to guess.', () => {
+      const fake_result = {
+        message: "GAME OVER",
+        sessionId: "3f0421bb5cb56631c170a35da90161d2",
+        data: {
+          playerId: "test@example.com",
+          sessionId: "3f0421bb5cb56631c170a35da90161d2",
+          totalWordCount: 80,
+          correctWordCount: 77,
+          totalWrongGuessCount: 233,
+          score: 1307,
+          datetime: "2014-10-28 11:45:58"
+        }
+      };
+
+      const spy_startGame = jest.spyOn(savior, 'startGame').mockImplementation(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve({sessionId:'1111'})
+          }, 10);
+        });
+      });
+
+
+      const spy_getNextWord = jest.spyOn(savior, 'getNextWord').mockImplementationOnce(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve({
+              sessionId: "1111",
+              data: {
+                word: "*****",
+                totalWordCount: 1,
+                wrongGuessCountOfCurrentWord: 0
+              }
+            });
+          }, 10);
+        });
       })
-
-    })
-
-
+      .mockImplementationOnce(() =>{
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve({message: 'No more word to guess'});
+          }, 10);
+        });
+      });
     
+      const spy_makeGuess = jest.spyOn(savior, 'makeGuess').mockImplementation(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve({message: 'No more guess left'});
+          }, 10);
+        });
+      });
+
+
+      const spy_getResult = jest.spyOn(savior, 'getResult').mockImplementation(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve(fake_result);
+          }, 10);
+        });
+      });
+
+      return savior.play().then(res => {
+        expect(res).toEqual(fake_result);
+      });
+    });
+    
+    test('Should get result when guess all words and there is no more word to guess.', () => {
+        const fake_result = {
+          message: "GAME OVER",
+          sessionId: "3f0421bb5cb56631c170a35da90161d2",
+          data: {
+            playerId: "test@example.com",
+            sessionId: "3f0421bb5cb56631c170a35da90161d2",
+            totalWordCount: 80,
+            correctWordCount: 77,
+            totalWrongGuessCount: 233,
+            score: 1307,
+            datetime: "2014-10-28 11:45:58"
+          }
+        };
+
+        const spy_startGame = jest.spyOn(savior, 'startGame').mockImplementation(() => {
+          return new Promise((resolve) => {
+            setTimeout(function() {
+              resolve({sessionId:'1111'})
+            }, 10);
+          });
+        });
+
+        const spy_getNextWord = jest.spyOn(savior, 'getNextWord').mockImplementationOnce(() => {
+          return new Promise((resolve) => {
+            setTimeout(function() {
+              resolve({
+                sessionId: "1111",
+                data: {
+                  word: "*****",
+                  totalWordCount: 1,
+                  wrongGuessCountOfCurrentWord: 0
+                }
+              });
+            }, 10);
+          });
+        })
+        .mockImplementationOnce(() =>{
+          return new Promise((resolve) => {
+            setTimeout(function() {
+              resolve({message: 'No more word to guess'});
+            }, 10);
+          });
+        });
+
+        const spy_makeGuess = jest.spyOn(savior, 'makeGuess').mockImplementationOnce(() => {
+          return new Promise((resolve) => {
+            setTimeout(function() {
+              resolve({
+                sessionId: "1111",
+                data: {
+                  word: "****",
+                  totalWordCount: 1,
+                  wrongGuessCountOfCurrentWord: 0
+                }
+              });
+            }, 10);
+          });
+        }).mockImplementationOnce(() => {
+          return new Promise((resolve) => {
+            setTimeout(function() {
+              resolve({
+                sessionId: "1111",
+                data: {
+                  word: "**DD",
+                  totalWordCount: 1,
+                  wrongGuessCountOfCurrentWord: 1
+                }
+              });
+            }, 10);
+          });
+        }).mockImplementationOnce(() => {
+          return new Promise((resolve) => {
+            setTimeout(function() {
+              resolve({
+                sessionId: "1111",
+                data: {
+                  word: "*BDD",
+                  totalWordCount: 1,
+                  wrongGuessCountOfCurrentWord: 2
+                }
+              });
+            }, 10);
+          });
+        }).mockImplementationOnce(() => {
+          return new Promise((resolve) => {
+            setTimeout(function() {
+              resolve({
+                sessionId: "1111",
+                data: {
+                  word: "ABDD",
+                  totalWordCount: 1,
+                  wrongGuessCountOfCurrentWord: 3
+                }
+              });
+            }, 10);
+          });
+        });
+
+        const spy_getResult = jest.spyOn(savior, 'getResult').mockImplementation(() => {
+          return new Promise((resolve) => {
+            setTimeout(function() {
+              resolve(fake_result);
+            }, 10);
+          });
+        });
+
+        return savior.play().then(res => {
+          expect(res).toEqual(fake_result);
+        });
+
+    });
   });
 
 
-  describe('6. Utils test',() => {
-    // test('Should return info from async function synchronously.', () => {
-    //   let data = 'data';
-    //   let expect_result = data;
-    //   let result = savior.await(() => {
-    //     return new Promise((resolve) => {
-    //       resolve(data);
-    //     })
-    //   });
-    //   expect(result).toEqual(expect_result);
-    // })
-  })
 
 
 

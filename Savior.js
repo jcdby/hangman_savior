@@ -206,7 +206,7 @@ class Savior {
     //set the default next letter to guess to a
     let letterToGuess = 'A';
 
-    //the logic to get the letter to guess
+    //The logic to get the letter to guess
     /*
     do something here.
     */
@@ -236,9 +236,6 @@ class Savior {
 
   }
 
-  submitResult(){
-
-  }
 
   
   gettingNextWordLoop(sessionId){
@@ -258,7 +255,7 @@ class Savior {
                if(res.message && res.message !== 'No more guess left'){
                  return this.gettingNextWordLoop(sessionId);
                }else {
-                 if(res.data && res.data.word &&  res.data.word.includes('*')){
+                 if(res.data && res.data.word && res.data.word.includes('*')){
                    return this.makingGuessLoop(sessionId);
                  }else {
                    return this.gettingNextWordLoop(sessionId);

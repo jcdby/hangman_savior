@@ -233,6 +233,8 @@ describe('Savior Test', ()=>{
   }); 
 
   describe('5. Savior will save the man to be hanged.', () => {
+    //Start of Describe 5
+
     test('Should return error message when savior play game with wrong player id.', () => {
       const err_message = 'Player does not exist';
       const spy_startGame = jest.spyOn(savior, 'startGame').mockImplementation(() => {
@@ -410,8 +412,8 @@ describe('Savior Test', ()=>{
                 sessionId: "1111",
                 data: {
                   word: "****",
-                  totalWordCount: 1,
-                  wrongGuessCountOfCurrentWord: 0
+                  totalWordCount: 80,
+                  wrongGuessCountOfCurrentWord: 1
                 }
               });
             }, 10);
@@ -423,7 +425,7 @@ describe('Savior Test', ()=>{
                 sessionId: "1111",
                 data: {
                   word: "**DD",
-                  totalWordCount: 1,
+                  totalWordCount: 80,
                   wrongGuessCountOfCurrentWord: 1
                 }
               });
@@ -436,8 +438,8 @@ describe('Savior Test', ()=>{
                 sessionId: "1111",
                 data: {
                   word: "*BDD",
-                  totalWordCount: 1,
-                  wrongGuessCountOfCurrentWord: 2
+                  totalWordCount: 80,
+                  wrongGuessCountOfCurrentWord: 1
                 }
               });
             }, 10);
@@ -449,8 +451,8 @@ describe('Savior Test', ()=>{
                 sessionId: "1111",
                 data: {
                   word: "ABDD",
-                  totalWordCount: 1,
-                  wrongGuessCountOfCurrentWord: 3
+                  totalWordCount: 80,
+                  wrongGuessCountOfCurrentWord: 1
                 }
               });
             }, 10);
@@ -470,6 +472,11 @@ describe('Savior Test', ()=>{
         });
 
     });
+
+    test('')
+
+
+  //End of describe 5
   });
 
 

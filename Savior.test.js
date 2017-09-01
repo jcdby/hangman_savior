@@ -76,11 +76,23 @@ describe('Savior Test', ()=>{
         let saviorKnowledge = savior.getKnowledge();
         expect(saviorKnowledge.dict).not.toBeNull();
         expect(saviorKnowledge.lettersFreq).not.toBeNull();
-        expect(saviorKnowledge.dict).toBeInstanceOf(Object);
+        expect(saviorKnowledge.dict).toBeInstanceOf(Array);
         expect(saviorKnowledge.lettersFreq).toBeInstanceOf(Array);
         expect(saviorKnowledge.backupFreq).not.toBeNull();
         expect(typeof saviorKnowledge.backupFreq).toEqual('string');
     });
+
+    test('Should get dict from file.', () => {
+      let dict_file_path = './words_alpha.txt';
+      let fs = require('fs');
+      let read_string = fs.readFileSync(dict_file_path,'utf-8');
+      let expect_dict = read_string.split(/\r+\n/);
+      savior.learnEnglish(dict_file_path);
+      let saviorKnowlege = savior.getKnowledge();
+      expect(saviorKnowlege.dict.length).toEqual(expect_dict.length);
+    })
+
+
   });
 
 
@@ -473,7 +485,6 @@ describe('Savior Test', ()=>{
 
     });
 
-    test('')
 
 
   //End of describe 5

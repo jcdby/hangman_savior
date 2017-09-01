@@ -97,11 +97,13 @@ class Savior {
       throw new Error('file not existed!');
     }
 
-
+    
+    let readed_string = fs.readFileSync(path, 'utf-8');
+    let dict = readed_string.split(/\r+\n/);
 
 
     this.myKnowledge = {
-      dict: {},
+      dict: dict,
       lettersFreq: [],
       backupFreq: ''
     }

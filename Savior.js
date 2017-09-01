@@ -243,10 +243,10 @@ class Savior {
   
   gettingNextWordLoop(sessionId){
     return this.getNextWord(sessionId)
-      then(res => {
+      .then(res => {
         console.log(res.message);
         if(res.message && res.message !== 'No more word to guess'){
-          this.makingGuessLoop(sessionId);
+          return this.makingGuessLoop(sessionId);
         }
       })
       .then(() => {
@@ -284,12 +284,12 @@ class Savior {
       .then(sessionId => {
         //This part is only for guessing word.
         return this.gettingNextWordLoop(sessionId)
-                 .then(guess_result => {
-                  //print out guess_result
-                  console.info(JSON.stringify(guess_result));
-                  return guess_result;
-                 });
       })
+      .then(guess_result => {
+        //print out guess_result
+        console.info(JSON.stringify(guess_result));
+        return guess_result;
+      });
   }
 
 }

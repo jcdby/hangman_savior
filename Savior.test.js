@@ -75,8 +75,10 @@ describe('Savior Test', ()=>{
         savior.learnEnglish(dict_file_path);
         let saviorKnowledge = savior.getKnowledge();
         expect(saviorKnowledge.dict).not.toBeNull();
+        expect(saviorKnowledge.dictByLength).not.toBeNull();
         expect(saviorKnowledge.lettersFreq).not.toBeNull();
         expect(saviorKnowledge.dict).toBeInstanceOf(Array);
+        expect(saviorKnowledge.dictByLength).toBeInstanceOf(Object);
         expect(saviorKnowledge.lettersFreq).toBeInstanceOf(Array);
         expect(saviorKnowledge.backupFreq).not.toBeNull();
         expect(typeof saviorKnowledge.backupFreq).toEqual('string');
@@ -90,7 +92,7 @@ describe('Savior Test', ()=>{
       savior.learnEnglish(dict_file_path);
       let saviorKnowlege = savior.getKnowledge();
       expect(saviorKnowlege.dict.length).toEqual(expect_dict.length);
-    })
+    });
 
 
   });
@@ -103,13 +105,22 @@ describe('Savior Test', ()=>{
       savior.setLengthByWordToGuess('*****');
 
       let expect_dict = ['wordl', 'world'];
-      let new_dict = savior.updateDictByWordLength(old_dict,savior.getLengthForWordToGuess());
+      let wordlength = savior.getLengthForWordToGuess();
+      let new_dict = savior.updateDictByWordLength(old_dict,wordlength);
       expect(new_dict.length).toEqual(expect_dict.length);
+      expect(savior.getKnowledge().dictByLength[wordlength]).toEqual(expect_dict);
 
       for(let i = 0; i < new_dict.length; i++){
         expect(new_dict[i]).toEqual(expect_dict[i]);
       }
     });
+
+
+    test('Should update savior`s dictByLength after update its dict by its length.', () => {
+      //be previors test has already update the dict sorted by length.
+      let expect_dict = ['wordl', 'world'];
+      let length = 5;
+    })
 
 
     test('Should throw error when the parameter of the setLengthByWordToGuess is not a string.', () => {

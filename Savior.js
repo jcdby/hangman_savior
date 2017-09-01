@@ -5,7 +5,12 @@ class Savior {
 
   constructor(saviorId) {
     this.saviorId = saviorId;
-    this.myKnowledge = {};
+    this.myKnowledge = {
+      dict: [],
+      dictByLength:{},
+      lettersFreq: [],
+      backupFreq: ''
+    };
     this.length = 0;
   }
 
@@ -97,13 +102,14 @@ class Savior {
       throw new Error('file not existed!');
     }
 
-    
+
     let readed_string = fs.readFileSync(path, 'utf-8');
     let dict = readed_string.split(/\r+\n/);
 
 
     this.myKnowledge = {
       dict: dict,
+      dictByLength:{},
       lettersFreq: [],
       backupFreq: ''
     }
@@ -130,14 +136,18 @@ class Savior {
       throw new Error('Second parameter should be a number!');
     }
 
-    let new_dict = []
-    old_dict.forEach((el) => {
-      if(el.length === word_length){
-        new_dict.push(el);
-      }
-    })
-
-    return new_dict;
+    let myKnowledge = this.getKnowledge();    
+    if(myKnowledge.dictByLength && !myKnowledge.dictByLength[word_length]){
+      let new_dict = []
+      old_dict.forEach((el) => {
+        if(el.length === word_length){
+          new_dict.push(el);
+        }
+      })
+      //Store the calculated dict by length;
+      myKnowledge.dictByLength[word_length] = new_dict;
+    }
+      return myKnowledge.dictByLength[word_length];
   }
 
   updateDictByLetter(old_dict, letter, position){

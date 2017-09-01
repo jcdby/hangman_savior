@@ -108,6 +108,7 @@ describe('Savior Test', ()=>{
       let wordlength = savior.getLengthForWordToGuess();
       let new_dict = savior.updateDictByWordLength(old_dict,wordlength);
       expect(new_dict.length).toEqual(expect_dict.length);
+      //The calculated dict by length has been stored in the dictByLength;
       expect(savior.getKnowledge().dictByLength[wordlength]).toEqual(expect_dict);
 
       for(let i = 0; i < new_dict.length; i++){

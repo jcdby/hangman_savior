@@ -3,15 +3,34 @@ let request = require('./request');
 
 class Savior {
 
-  constructor(saviorId) {
-    this.saviorId = saviorId;
+  constructor(saviorId, filePath) {
+    this.saviorId = saviorId || ''; 
     this.myKnowledge = {
-      dict: [],
-      dictByLength:{},
-      lettersFreq: [],
-      backupFreq: ''
+      dict: {},//dict 包含按长度分类的子字典。
+      wordDict: [], //根据当前获得的word的长度所保留的更新和计算字母频度用字典。
+      guessedLetter: [], //已经猜过的字母数组。
+      lastGuess:'', //上一次猜过的字幕
+      lettersFreq: [],  //每次根据wordDict计算所得的字母频率数组
+      backupFreq: '', //备用字母频率数组
     };
     this.length = 0;
+    this.filePath = filePath || '';
+  }
+
+  setWordFilePath(path){
+    this.filePath = path;
+  }
+
+  getWordFilePath() {
+    return this.filePath;
+  }
+
+  setWordDict(length){
+    this.myKnowledge.wordDict = this.myKnowledge.dict[length];
+  }
+
+  getWordDict() {
+    return this.myKnowledge.wordDict;
   }
 
 
@@ -21,6 +40,7 @@ class Savior {
       throw new Error('The first parameter should be a array.');
     }
     if(dict.length === 0){
+      //服务器的单词没有收录在本地词典的情况下，调用备用频率表。
       let backupletters = this.myKnowledge.backupFreq;
       nextLetter = backupletters.charAt(0);
       this.setBackupLetterFreq(backupletters.slice(1));
@@ -104,16 +124,20 @@ class Savior {
 
 
     let readed_string = fs.readFileSync(path, 'utf-8');
-    let dict = readed_string.split(/\r+\n/);
+    let dict = readed_string.split(/\r|\n/);
 
+    let dictByLength = {};
 
-    this.myKnowledge = {
-      dict: dict,
-      dictByLength:{},
-      lettersFreq: [],
-      backupFreq: ''
-    }
-  }
+    //按照dict中单词的长度，将它们划分的各自的数组当中。
+    dict.forEach(function(element) {
+      if(!dictByLength.hasOwnProperty(element.length)){
+        dictByLength[element.length] = [];
+      }
+      dictByLength[element.length].push(element);
+    }, this);
+
+    this.myKnowledge.dict = dictByLength
+ }
 
 
   getKnowledge() {
@@ -128,27 +152,6 @@ class Savior {
     this.saviorId = id;
   }
 
-  updateDictByWordLength(old_dict, word_length) {
-    if(!Array.isArray(old_dict)){
-      throw new Error('First parameter should be a array!')
-    }
-    if(arguments.length === 2 && typeof word_length !== 'number'){
-      throw new Error('Second parameter should be a number!');
-    }
-
-    let myKnowledge = this.getKnowledge();    
-    if(myKnowledge.dictByLength && !myKnowledge.dictByLength[word_length]){
-      let new_dict = []
-      old_dict.forEach((el) => {
-        if(el.length === word_length){
-          new_dict.push(el);
-        }
-      })
-      //Store the calculated dict by length;
-      myKnowledge.dictByLength[word_length] = new_dict;
-    }
-      return myKnowledge.dictByLength[word_length];
-  }
 
   updateDictByLetter(old_dict, letter, position){
     if(!Array.isArray(old_dict)){
@@ -196,7 +199,8 @@ class Savior {
     let data = {
       playerID: playerID,
       action: action
-    }
+    };
+    this.learnEnglish(this.filePath);
 
     return request(data)
   }
@@ -213,10 +217,15 @@ class Savior {
 
   }
 
-  makeGuess(sessionId){
+  makeGuess(sessionId, wordToGuess){
+    if(!wordToGuess){
+      throw new Error('There is no word to guess!');
+    }
+
     let action = 'guessWord';
     //set the default next letter to guess to a
     let letterToGuess = 'A';
+
 
     //The logic to get the letter to guess
     /*
@@ -254,21 +263,25 @@ class Savior {
     return this.getNextWord(sessionId)
       .then(res => {
         console.info(res);
-        if(!res.message && res.message !== 'No more word to guess'){
-           return this.makingGuessLoop(sessionId);
+        if(res.data &&  res.data.word){
+          let wordToGuess = res.data.word;
+          this.setWordDict(wordToGuess.length);
+          return this.makingGuessLoop(sessionId, wordToGuess);
+        }else if(res.data && !res.data.word){
+          throw new Error('There is no word in response!');
         }
       })
   }
 
-  makingGuessLoop(sessionId){
-    return this.makeGuess(sessionId)
+  makingGuessLoop(sessionId, wordToGuess){
+    return this.makeGuess(sessionId,wordToGuess)
              .then(res => {
                console.info(res);
-               if(res.message && res.message !== 'No more guess left'){
+               if(res.message && res.message === 'No more guess left'){
                  return this.gettingNextWordLoop(sessionId);
                }else {
                  if(res.data && res.data.word && res.data.word.includes('*')){
-                   return this.makingGuessLoop(sessionId);
+                   return this.makingGuessLoop(sessionId, wordToGuess);
                  }else {
                    return this.gettingNextWordLoop(sessionId);
                  }

@@ -38,6 +38,13 @@ describe('Savior Test', ()=>{
       let lengthOfWordToGuess = savior.getLengthForWordToGuess();
       expect(lengthOfWordToGuess).toEqual(wordToGuess.length);
     });
+
+    test('Should set file path through constructor.', () => {
+      let wordFilePath ='./words_test.txt';
+      let savior = new Savior('test@example.com', wordFilePath);
+      expect(savior.getWordFilePath()).toEqual(wordFilePath);
+    })
+
   });
 
 
@@ -74,24 +81,40 @@ describe('Savior Test', ()=>{
         let dict_file_path = './words_alpha.txt';
         savior.learnEnglish(dict_file_path);
         let saviorKnowledge = savior.getKnowledge();
-        expect(saviorKnowledge.dict).not.toBeNull();
-        expect(saviorKnowledge.dictByLength).not.toBeNull();
-        expect(saviorKnowledge.lettersFreq).not.toBeNull();
-        expect(saviorKnowledge.dict).toBeInstanceOf(Array);
-        expect(saviorKnowledge.dictByLength).toBeInstanceOf(Object);
+        expect(saviorKnowledge.dict).toBeInstanceOf(Object);
         expect(saviorKnowledge.lettersFreq).toBeInstanceOf(Array);
-        expect(saviorKnowledge.backupFreq).not.toBeNull();
+        expect(saviorKnowledge.wordDict).toBeInstanceOf(Array);
+        expect(saviorKnowledge.guessedLetter).toBeInstanceOf(Array);
         expect(typeof saviorKnowledge.backupFreq).toEqual('string');
+        expect(typeof saviorKnowledge.lastGuess).toEqual('string');
     });
 
-    test('Should get dict from file.', () => {
-      let dict_file_path = './words_alpha.txt';
+
+    test('Should set and get files path.', () => {
+      let dict_file_path = './words_test.txt';
+      savior.setWordFilePath(dict_file_path);
+      expect(savior.getWordFilePath()).toEqual(dict_file_path);
+    });
+
+
+    test('Should get dict from file and store them by these words` length.', () => {
+      let dict_file_path = './words_test.txt';
       let fs = require('fs');
       let read_string = fs.readFileSync(dict_file_path,'utf-8');
-      let expect_dict = read_string.split(/\r+\n/);
+      let readed_dict = read_string.split(/\r|\n/);
+      let expect_dict = {};
+
+      readed_dict.forEach(function (element) {
+        if(!expect_dict.hasOwnProperty(element.length)){
+          expect_dict[element.length] = [];
+        }
+        expect_dict[element.length].push(element);
+      })
+
       savior.learnEnglish(dict_file_path);
       let saviorKnowlege = savior.getKnowledge();
-      expect(saviorKnowlege.dict.length).toEqual(expect_dict.length);
+      expect(saviorKnowlege.dict).toEqual(expect_dict);
+
     });
 
 
@@ -99,23 +122,6 @@ describe('Savior Test', ()=>{
 
 
   describe('3. Savior updates his dict.', () => {
-    test('Should update savior`s dict by the length of the word to be gussed.', () => {
-      let old_dict = ['good','a','bb','cooler','sdfjoijeifj','fjkdjjfd','ss','wordl', 'word','world'];
-      //The length of the word to be guessed is 5. 
-      savior.setLengthByWordToGuess('*****');
-
-      let expect_dict = ['wordl', 'world'];
-      let wordlength = savior.getLengthForWordToGuess();
-      let new_dict = savior.updateDictByWordLength(old_dict,wordlength);
-      expect(new_dict.length).toEqual(expect_dict.length);
-      //The calculated dict by length has been stored in the dictByLength;
-      expect(savior.getKnowledge().dictByLength[wordlength]).toEqual(expect_dict);
-
-      for(let i = 0; i < new_dict.length; i++){
-        expect(new_dict[i]).toEqual(expect_dict[i]);
-      }
-    });
-
 
     test('Should update savior`s dictByLength after update its dict by its length.', () => {
       //be previors test has already update the dict sorted by length.
@@ -131,20 +137,6 @@ describe('Savior Test', ()=>{
     })
 
 
-    test('Should throw error when updateDictByWordLength`s first parameter is not array and second parameter is not Number.', () => {
-      expect(() => {
-        let new_dict = savior.updateDictByWordLength({}, 5);
-      }).toThrowError('First parameter should be a array!');
-
-      expect(() => {
-        let new_dict = savior.updateDictByWordLength([], '5');
-      }).toThrowError('Second parameter should be a number!');
-
-      expect(() => {
-        let new_dict = savior.updateDictByWordLength();
-      }).toThrow();
-
-    });
 
     test('Should update savior`s dict by the wrong letter gussed.', () => {
       let old_dict = ['good','a','bb','cooler','sbfjoijeifj','fjkdjjfd','sb','wordl', 'word','world'];
@@ -171,10 +163,9 @@ describe('Savior Test', ()=>{
       }).toThrowError('Second parameter should be a string');
     });
 
-    test('Should return empty array when the fist parameter of the updateDictByLetter and updateDictByWordLength was empty.', () => {
+    test('Should return empty array when the fist parameter of the updateDictByLetter was empty.', () => {
       let old_dict = [];
       expect(savior.updateDictByLetter(old_dict,'b').length).toEqual(0);
-      expect(savior.updateDictByWordLength(old_dict, savior.getLengthForWordToGuess()).length).toEqual(0);
     });
 
 
@@ -203,6 +194,13 @@ describe('Savior Test', ()=>{
   });
 
   describe('4. Savior updates the next letter to guess', () => {
+    //Start of Describe 4
+
+    test('Should return the last guessed letter after setting it.', () => {
+
+    })
+
+
     test('Should return the letter which is appeared in most words.', () => {
       let dict = ['gooad','gooa','boooooooooooooooooooooooooad','cooad','sbjad','fjkw','sbbe','worad', 'wooare','wooarl'];
       let expect_letter = 'a'; //It counts only once when the same letters appeared in the same word
@@ -253,11 +251,128 @@ describe('Savior Test', ()=>{
       expect(() => {
         savior.setBackupLetterFreq([]);
       }).toThrowError('The parameter should be a string!');
-    })
+    });
+
+  //End of Describe 4
   }); 
 
   describe('5. Savior will save the man to be hanged.', () => {
     //Start of Describe 5
+
+    test('Savior should get right dict after calling startGame.', () => {
+      let wordFilePath = './words_test.txt';
+      savior.setWordFilePath(wordFilePath);
+
+      let fs = require('fs');
+      let read_string = fs.readFileSync(wordFilePath,'utf-8');
+      let readed_dict = read_string.split(/\r|\n/);
+      let expect_dict = {};
+
+      readed_dict.forEach(function (element) {
+        if(!expect_dict.hasOwnProperty(element.length)){
+          expect_dict[element.length] = [];
+        }
+        expect_dict[element.length].push(element);
+      })
+
+      jest.mock('./request.js', () => {
+        return jest.fn(() => {
+          return new Promise((resolve) =>{
+            setTimeout(function() {
+              resolve({
+                sessionId:'someid'
+              })
+            }, 10);
+          })
+        })
+      });
+
+
+      return savior.startGame().then(res =>{
+        expect(savior.getKnowledge().dict).toEqual(expect_dict);
+      })
+    });
+
+    test('Should update wordDict acording to the length of the word from server.', () => {
+
+    })
+
+
+    test('Should return error message after getting next word but there is no word in the response.', () => {
+      jest.spyOn(savior, 'getNextWord').mockImplementation(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve({
+              data:{
+                noword: 'noword'
+              }                 
+            });
+          }, 10);
+        });
+      });
+
+      return savior.gettingNextWordLoop('sessionID')
+                .catch(err => {
+                  expect(err).toEqual(new Error('There is no word in response!'))
+                });
+    });
+
+    test('Should throw error if the function of makeGuess does not have wordToGuess parameter.',() => {
+      expect(()=>{savior.makeGuess('sessionid')}).toThrowError('There is no word to guess!');
+      expect(()=>{savior.makeGuess('sessionid', '****')}).not.toThrow();
+    });
+
+    test('Should set the wordDict at the first time to get next word', () => {
+      let wordFilePath = './words_test.txt';
+      savior.setWordFilePath(wordFilePath);
+
+      let fs = require('fs');
+      let read_string = fs.readFileSync(wordFilePath,'utf-8');
+      let readed_dict = read_string.split(/\r|\n/);
+      let expect_dict = {};
+
+      readed_dict.forEach(function (element) {
+        if(!expect_dict.hasOwnProperty(element.length)){
+          expect_dict[element.length] = [];
+        }
+        expect_dict[element.length].push(element);
+      });
+
+      let expect_wordDict = expect_dict['****'.length];
+
+     jest.spyOn(savior, 'getNextWord').mockImplementationOnce(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve({
+              data:{word:'****'}
+            });
+          }, 10);
+        })
+      })
+        .mockImplementationOnce(() =>{
+          return new Promise((resolve) => {
+            setTimeout(function() {
+              resolve({message: 'No more word to guess'});
+            }, 10);
+          });
+        });
+
+      jest.spyOn(savior, 'makeGuess').mockImplementation(() => {
+        return new Promise((resolve) => {
+          setTimeout(function() {
+            resolve({message: 'No more guess left'});
+          }, 10);
+        });
+      });
+
+      savior.learnEnglish(wordFilePath);
+
+       return savior.gettingNextWordLoop('sessionid').then((res) => {
+         expect(savior.getWordDict()).toEqual(expect_wordDict);
+
+       })
+    });
+
 
     test('Should return error message when savior play game with wrong player id.', () => {
       const err_message = 'Player does not exist';
@@ -384,7 +499,7 @@ describe('Savior Test', ()=>{
       });
     });
     
-    test('Should get result when guess all words and there is no more word to guess.', () => {
+    test('Should get result after guessing all words and there is no more word to guess.', () => {
         const fake_result = {
           message: "GAME OVER",
           sessionId: "3f0421bb5cb56631c170a35da90161d2",

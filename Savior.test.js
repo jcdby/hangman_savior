@@ -153,6 +153,24 @@ describe('Savior Test', ()=>{
       
     });
 
+    test('Should set and get lastGuess.', () => {
+      let expect_letter = 'A';
+      savior.setLastGuess(expect_letter);
+      expect(savior.getLastGuess()).toEqual(expect_letter);
+    })
+
+    test('Should correctly return the most frequent letter when there is no lastGuess.', () => {
+                  
+    });
+
+    test('Should correctly return the most frequent letter when there is lastGuess and the word to guess includes the same letter as lastGuess.', () => {
+
+    });
+
+    test('Should correctly return the most frequent letter when there is lastGuess and the word to guess does not include the same letter as lastGuess.', () => {
+
+    });
+    
     test('Should throw error when updateDictByLetter`f first parameter is not array and second parameter is not string.', () => {
       expect(() => {
         let new_dict = savior.updateDictByLetter({},'a');

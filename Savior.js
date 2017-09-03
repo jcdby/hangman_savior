@@ -33,6 +33,14 @@ class Savior {
     return this.myKnowledge.wordDict;
   }
 
+  setLastGuess(letter) {
+    this.lastGuess = letter;
+  }
+
+  getLastGuess() {
+    return this.lastGuess;
+  }
+
 
   getNextLetterToGuess(dict) {
     let nextLetter = 'b';
@@ -217,7 +225,13 @@ class Savior {
 
   }
 
+
+  /*
+  pre-condition: There is wordToGuess and the word is still including * letter.
+  */
   makeGuess(sessionId, wordToGuess){
+    
+    //when wordToGuess is not sent to makeGuess function correctly.
     if(!wordToGuess){
       throw new Error('There is no word to guess!');
     }

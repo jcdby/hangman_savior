@@ -160,7 +160,20 @@ describe('Savior Test', ()=>{
     })
 
     test('Should correctly return the most frequent letter when there is no lastGuess.', () => {
-                  
+      let lastGuess = savior.getLastGuess();
+      expect(savior.getLastGuess()).toEqual('');
+      let wordToGuess = '****';
+      savior.myKnowledge.dict = {
+        4: ['aabb', 'bbcc', 'fjibd','ebifs']
+      };
+
+      jest.mock('./request.js', () => {
+        return 0;
+      });
+
+      savior.makeGuess('sessionid', wordToGuess);
+      expect(savior.getLastGuess()).toEqual('b');
+
     });
 
     test('Should correctly return the most frequent letter when there is lastGuess and the word to guess includes the same letter as lastGuess.', () => {
@@ -337,7 +350,6 @@ describe('Savior Test', ()=>{
 
     test('Should throw error if the function of makeGuess does not have wordToGuess parameter.',() => {
       expect(()=>{savior.makeGuess('sessionid')}).toThrowError('There is no word to guess!');
-      expect(()=>{savior.makeGuess('sessionid', '****')}).not.toThrow();
     });
 
     test('Should set the wordDict at the first time to get next word', () => {

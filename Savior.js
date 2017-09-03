@@ -34,11 +34,11 @@ class Savior {
   }
 
   setLastGuess(letter) {
-    this.lastGuess = letter;
+    this.myKnowledge.lastGuess = letter;
   }
 
   getLastGuess() {
-    return this.lastGuess;
+    return this.myKnowledge.lastGuess;
   }
 
 
@@ -239,14 +239,16 @@ class Savior {
     let action = 'guessWord';
     //set the default next letter to guess to a
     let letterToGuess = 'A';
-
-
+    let length = '' + wordToGuess.length;
+    
     //The logic to get the letter to guess
-    /*
-    do something here.
-    */
 
+    if(!this.getLastGuess()){
+      let dict = this.getKnowledge().dict[length];
+      letterToGuess = this.getNextLetterToGuess(dict);      
+    }
 
+    this.setLastGuess(letterToGuess);
     //make sure the letter be upper case;
     letterToGuess = letterToGuess.toUpperCase();
 
@@ -277,12 +279,12 @@ class Savior {
     return this.getNextWord(sessionId)
       .then(res => {
         console.info(res);
-        if(res.data &&  res.data.word){
+        if(res.data && res.data.word) {
           let wordToGuess = res.data.word;
           this.setWordDict(wordToGuess.length);
           return this.makingGuessLoop(sessionId, wordToGuess);
-        }else if(res.data && !res.data.word){
-          throw new Error('There is no word in response!');
+        } else if(res.data && !res.data.word) { 
+           throw new Error('There is no word in response!');
         }
       })
   }
@@ -291,12 +293,14 @@ class Savior {
     return this.makeGuess(sessionId,wordToGuess)
              .then(res => {
                console.info(res);
+               // 一个单词可以猜测的次数达到了上限。
                if(res.message && res.message === 'No more guess left'){
                  return this.gettingNextWordLoop(sessionId);
                }else {
                  if(res.data && res.data.word && res.data.word.includes('*')){
                    return this.makingGuessLoop(sessionId, wordToGuess);
                  }else {
+                   //当res.data.word不包含 * 的情况。代表猜单词正确的情况。
                    return this.gettingNextWordLoop(sessionId);
                  }
                }

@@ -254,7 +254,6 @@ describe('Savior Test', ()=>{
 
 
 
-    test('')
     
     test('Should throw error when updateDictByLetter`f first parameter is not array and second parameter is not string.', () => {
       expect(() => {
@@ -320,7 +319,7 @@ describe('Savior Test', ()=>{
 
     test('Should return the first character in the backup freq collection and update the backup freq collection when the dict updated is empty.', () =>{
       let dict = [];
-      let backup_letter_freq = 'eabiqwr';
+      let backup_letter_freq = 'EABIQWR';
       // let updated_backup_letter_freq  = backup_letter_freq.slice(1);
       // let expect_next_letter = backup_letter_freq.charAt(0);
 
@@ -331,7 +330,7 @@ describe('Savior Test', ()=>{
 
       savior.setBackupLetterFreq(backup_letter_freq);
 
-      let expect_next_letter = 'b';
+      let expect_next_letter = 'B';
 
 
       //Should consider the letters guessed.
@@ -407,9 +406,6 @@ describe('Savior Test', ()=>{
       })
     });
 
-    test('Should update wordDict acording to the length of the word from server.', () => {
-
-    })
 
 
     test('Should return error message after getting next word but there is no word in the response.', () => {

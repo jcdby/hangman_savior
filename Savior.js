@@ -1,5 +1,12 @@
-let fs = require('fs');
-let request = require('./request');
+const fs = require('fs');
+const request = require('./request');
+
+const Console = require('console').Console;
+
+const output = fs.createWriteStream('./stdout.log');
+const errorOutput = fs.createWriteStream('./stderr.log');
+let console = new Console(output, errorOutput);
+
 
 class Savior {
 
@@ -11,7 +18,7 @@ class Savior {
       guessedLetter: [], //已经猜过的字母数组。
       lastGuess:'', //上一次猜过的字幕
       lettersFreq: [],  //每次根据wordDict计算所得的字母频率数组
-      backupFreq: '', //备用字母频率数组
+      backupFreq: 'ETAOINSHRDLUCMFWYPVBGKQJXZ', //备用字母频率数组
     };
     this.length = 0;
     this.filePath = filePath || '';
@@ -52,6 +59,10 @@ class Savior {
   getGuessedLetters() {
     return this.myKnowledge.guessedLetter;
   }
+  
+  resetGuessedLetters() {
+    this.myKnowledge.guessedLetter = [];
+  }
 
 
   getNextLetterToGuess(dict, wordToGuess) {
@@ -64,11 +75,13 @@ class Savior {
       let backupletters = this.getBackupLetterFreq();
       this.getGuessedLetters().forEach((el) => {
         console.info(el);
-        backupletters = backupletters.replace(el.toLowerCase(), '');
+        backupletters = backupletters.replace(el, '');
         console.info(backupletters);
       })
       nextLetter = backupletters.charAt(0);
       this.setBackupLetterFreq(backupletters.slice(1));
+      console.info(`the next backupletter is ${nextLetter}`);
+      console.info(`show me the backupletters is ${backupletters}`);
       return nextLetter;
     }
 
@@ -182,7 +195,7 @@ class Savior {
   }
 
 
-  updateDictByLetter(old_dict, letter, position){
+  updateDictByLetter(old_dict, letter, position ){
     if(!Array.isArray(old_dict)){
       throw new Error('First parameter should be a array!');
     }
@@ -222,6 +235,24 @@ class Savior {
   }
 
 
+  updateDictByWordToGuess(old_dict, wordToGuess){
+    let reg = '';
+    while(wordToGuess.includes('*')){
+      wordToGuess = wordToGuess.replace('*','.');
+    }
+    reg = wordToGuess;
+    console.log(`show me reg is ${reg}`)
+    let new_dict = [];
+
+    reg = new RegExp(reg, 'i','g');
+
+    new_dict = old_dict.filter((el) => {
+      return reg.test(el);
+    })
+    return new_dict;
+  }
+
+
   startGame(){
     let playerID = this.getSaviorId();
     let action = 'startGame';
@@ -241,6 +272,7 @@ class Savior {
       sessionId: sessionId,
       action: action
     };    
+    this.resetGuessedLetters();
     
     return request(data);
 
@@ -260,7 +292,7 @@ class Savior {
 
     let action = 'guessWord';
     //set the default next letter to guess to a
-    let letterToGuess = 'A';
+    let letterToGuess = '';
     let length = '' + wordToGuess.length;
     let dict = [];    
 
@@ -273,9 +305,10 @@ class Savior {
     }else {
       this.setGuessedLetter(lastGuess);
       let position = wordToGuess.indexOf(lastGuess);
-      console.info(position);
-      if(position !== -1){
-        dict = this.updateDictByLetter(this.getWordDict(), lastGuess, position);
+      console.log(`show the word to guess is ${wordToGuess}`);
+      console.log(`show me position ${position}`);
+      if(position > -1){
+        dict = this.updateDictByWordToGuess(this.getWordDict(), wordToGuess);
       }else {
         dict = this.updateDictByLetter(this.getWordDict(),lastGuess);
       }
@@ -286,6 +319,10 @@ class Savior {
     //make sure the letter be upper case;
     letterToGuess = letterToGuess.toUpperCase();
     this.setLastGuess(letterToGuess);
+
+    let that = this;
+    console.info(`show me the gussed letters is ${that.getGuessedLetters()}`);
+    console.info(`the letter to guess is ${letterToGuess}`)
 
     let data = {
       sessionId: sessionId,
@@ -314,6 +351,8 @@ class Savior {
     return this.getNextWord(sessionId)
       .then(res => {
         console.info(res);
+        //重置备用字母表。
+        this.setBackupLetterFreq('ETAOINSHRDLUCMFWYPVBGKQJXZ');
         if(res.data && res.data.word) {
           let wordToGuess = res.data.word;
           this.setLengthByWordToGuess(wordToGuess);
@@ -334,7 +373,7 @@ class Savior {
                  return this.gettingNextWordLoop(sessionId);
                }else {
                  if(res.data && res.data.word && res.data.word.includes('*')){
-                   return this.makingGuessLoop(sessionId, wordToGuess);
+                   return this.makingGuessLoop(sessionId, res.data.word);
                  }else {
                    //当res.data.word不包含 * 的情况。代表猜单词正确的情况。
                    return this.gettingNextWordLoop(sessionId);
@@ -345,6 +384,7 @@ class Savior {
 
 
   play(){
+    let sessionID = '';
     return this.startGame()
       .then(res => {
         console.info('start to play game!')
@@ -353,8 +393,8 @@ class Savior {
           //由于提供错误的player ID，抛出异常。
           throw new Error(res.message);
         }        
-        
-        return res.sessionId;
+        sessionID = res.sessionId;
+        return sessionID;
       })
       .then(sessionId => {
         //This part is only for guessing word.
@@ -362,7 +402,7 @@ class Savior {
       })
       .then(() => {
         console.info('start to getting result')
-        return this.getResult();
+        return this.getResult(sessionID);
       })
       .then(guess_result => {
         //print out guess_result

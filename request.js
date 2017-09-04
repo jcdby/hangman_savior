@@ -18,6 +18,7 @@ function request(data){
       let req = https.request(options,(res) => {
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
+          console.info(chunk);
           resolve(JSON.parse(chunk));
         });
       });

@@ -161,28 +161,100 @@ describe('Savior Test', ()=>{
 
     test('Should correctly return the most frequent letter when there is no lastGuess.', () => {
       let lastGuess = savior.getLastGuess();
+      //before making guess, the last guess was empty.
       expect(savior.getLastGuess()).toEqual('');
       let wordToGuess = '****';
       savior.myKnowledge.dict = {
         4: ['aabb', 'bbcc', 'fjibd','ebifs']
       };
+      savior.setWordDict(wordToGuess.length);
 
       jest.mock('./request.js', () => {
         return 0;
       });
 
       savior.makeGuess('sessionid', wordToGuess);
-      expect(savior.getLastGuess()).toEqual('b');
+      //after making guess, when the next time to make guess, there should be a last guess letter and it should be same to the letter guessed previously.
+      expect(savior.getLastGuess()).toEqual('B');
 
     });
 
     test('Should correctly return the most frequent letter when there is lastGuess and the word to guess includes the same letter as lastGuess.', () => {
+      //the letter the previous makeGuess guessed. 
+      let expect_lastGuess = 'A';
+      savior.setLastGuess(expect_lastGuess);
+
+      
+      let wordToGuess = '**A*';
+      
+      savior.setLengthByWordToGuess(wordToGuess);
+
+      jest.mock('./request.js', () => {
+        return 0;
+      });
+
+      savior.myKnowledge.dict = {
+        4: ['aaac', 'bbcc', 'fjibd', 'ebifs', 'ceab', 'ccab','ccac']
+      };
+
+
+      savior.setWordDict(wordToGuess.length);
+
+
+      let expect_wordDict = ['aaac', 'ceab', 'ccab', 'ccac'];
+
+      //acoording to the word to guess, update dict and calculate the most frequent letter. 
+      expect_nextGuess = 'C';
+
+      savior.makeGuess('sessionid', wordToGuess);
+      let guessedLetters = savior.getGuessedLetters();
+      //after make guess, the letter previous guessed should be pushed into guessedLetters.
+      expect(guessedLetters.includes(expect_lastGuess)).toBeTruthy();
+      expect(savior.getWordDict()).toEqual(expect_wordDict);
+      expect(savior.getLastGuess()).toEqual(expect_nextGuess);
+
 
     });
 
     test('Should correctly return the most frequent letter when there is lastGuess and the word to guess does not include the same letter as lastGuess.', () => {
+      //the letter the previous makeGuess guessed. 
+      let expect_lastGuess = 'A';
+      savior.setLastGuess(expect_lastGuess);
+
+      
+      let wordToGuess = '****';
+      
+      savior.setLengthByWordToGuess(wordToGuess);
+
+      jest.mock('./request.js', () => {
+        return 0;
+      });
+
+      savior.myKnowledge.dict = {
+        4: ['aaac', 'bbcc', 'jibd', 'bifs', 'ceab', 'ccab','ccac']
+      };
+
+
+      savior.setWordDict(wordToGuess.length);
+
+
+      let expect_wordDict = ['bbcc', 'jibd', 'bifs'];
+
+      //acoording to the word to guess, update dict and calculate the most frequent letter. 
+      expect_nextGuess = 'B';
+
+      savior.makeGuess('sessionid', wordToGuess);
+      let guessedLetters = savior.getGuessedLetters();
+      //after make guess, the letter previous guessed should be pushed into guessedLetters.
+      expect(guessedLetters.includes(expect_lastGuess)).toBeTruthy();
+      expect(savior.getWordDict()).toEqual(expect_wordDict);
+      expect(savior.getLastGuess()).toEqual(expect_nextGuess);
 
     });
+
+
+
+    test('')
     
     test('Should throw error when updateDictByLetter`f first parameter is not array and second parameter is not string.', () => {
       expect(() => {
@@ -227,16 +299,13 @@ describe('Savior Test', ()=>{
   describe('4. Savior updates the next letter to guess', () => {
     //Start of Describe 4
 
-    test('Should return the last guessed letter after setting it.', () => {
-
-    })
-
 
     test('Should return the letter which is appeared in most words.', () => {
-      let dict = ['gooad','gooa','boooooooooooooooooooooooooad','cooad','sbjad','fjkw','sbbe','worad', 'wooare','wooarl'];
+      let dict = ['goad','gooa','boad','coad','sbad','fjaw','sbae','word', 'oare','wool'];
       let expect_letter = 'a'; //It counts only once when the same letters appeared in the same word
+      let wordToGuess = '****';
 
-      let next_letter = savior.getNextLetterToGuess(dict);
+      let next_letter = savior.getNextLetterToGuess(dict, wordToGuess);
       expect(next_letter).toEqual(expect_letter);
 
     });
@@ -252,16 +321,30 @@ describe('Savior Test', ()=>{
     test('Should return the first character in the backup freq collection and update the backup freq collection when the dict updated is empty.', () =>{
       let dict = [];
       let backup_letter_freq = 'eabiqwr';
-      let updated_backup_letter_freq  = backup_letter_freq.slice(1);
-      let expect_next_letter = backup_letter_freq.charAt(0);
+      // let updated_backup_letter_freq  = backup_letter_freq.slice(1);
+      // let expect_next_letter = backup_letter_freq.charAt(0);
+
+      //The guessed letters.
+      savior.setGuessedLetter('A');
+      savior.setGuessedLetter('W');
+      savior.setGuessedLetter('E');
 
       savior.setBackupLetterFreq(backup_letter_freq);
 
+      let expect_next_letter = 'b';
+
+
+      //Should consider the letters guessed.
       let next_letter = savior.getNextLetterToGuess(dict);
+      
+      
+      let updated_backup_letter_freq = savior.getBackupLetterFreq();
+
       expect(next_letter).toEqual(expect_next_letter);
       expect(savior.getBackupLetterFreq()).toEqual(updated_backup_letter_freq);
 
     });
+    
 
     test('Should throw error when the first parameter of the getNextLetterToGuess is not a valid array.', () => {
       expect(() => {

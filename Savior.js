@@ -33,6 +33,10 @@ class Savior {
     return this.myKnowledge.wordDict;
   }
 
+  updateWordDict(dict) {
+    this.myKnowledge.wordDict = dict;
+  }
+
   setLastGuess(letter) {
     this.myKnowledge.lastGuess = letter;
   }
@@ -41,19 +45,34 @@ class Savior {
     return this.myKnowledge.lastGuess;
   }
 
+  setGuessedLetter(letter) {
+    this.myKnowledge.guessedLetter.push(letter);
+  }
 
-  getNextLetterToGuess(dict) {
+  getGuessedLetters() {
+    return this.myKnowledge.guessedLetter;
+  }
+
+
+  getNextLetterToGuess(dict, wordToGuess) {
     let nextLetter = 'b';
     if(!Array.isArray(dict)){
       throw new Error('The first parameter should be a array.');
     }
     if(dict.length === 0){
       //服务器的单词没有收录在本地词典的情况下，调用备用频率表。
-      let backupletters = this.myKnowledge.backupFreq;
+      let backupletters = this.getBackupLetterFreq();
+      this.getGuessedLetters().forEach((el) => {
+        console.info(el);
+        backupletters = backupletters.replace(el.toLowerCase(), '');
+        console.info(backupletters);
+      })
       nextLetter = backupletters.charAt(0);
       this.setBackupLetterFreq(backupletters.slice(1));
       return nextLetter;
     }
+
+    this.updateWordDict(dict);
 
     //随机设置一个字母表示字典里出现频率较高的字母。
     let freq = {availableLetter: 'a'};
@@ -73,12 +92,14 @@ class Savior {
 
       //根据单词里出现的字母，增加字典里其字母出现的次数。
       for(let key in lettersIncluded){
-        if(typeof freq[key] === 'number'){
-          //这个字母已经在之前单词出现过的情况。
-          freq[key]++;
-        }else{
-          //这个字母第一次出现的情况。
-          freq[key] = 1;
+        if(wordToGuess.indexOf(key.toUpperCase()) === -1){
+          if(typeof freq[key] === 'number'){
+            //这个字母已经在之前单词出现过的情况。
+            freq[key]++;
+          }else{
+            //这个字母第一次出现的情况。
+            freq[key] = 1;
+          }
         }
 
         //由于初始化的时候指定availableLetter为a，但在字典中的单词里很有可能不包含a，所以检查其有效性。若此字母的出现的次数已经被计算，那么其类型应该为number。
@@ -177,7 +198,7 @@ class Savior {
     // 当parameter只有两个的时候，代表的是savior猜错了字母。使用这个错误的字母更新字典。
     if(arguments.length === 2){
       new_dict = old_dict.filter((el) => {
-        return !el.includes(letter);
+        return !el.includes(letter.toLowerCase());
       })
     }
 
@@ -236,21 +257,35 @@ class Savior {
       throw new Error('There is no word to guess!');
     }
 
+
     let action = 'guessWord';
     //set the default next letter to guess to a
     let letterToGuess = 'A';
     let length = '' + wordToGuess.length;
-    
-    //The logic to get the letter to guess
+    let dict = [];    
 
-    if(!this.getLastGuess()){
-      let dict = this.getKnowledge().dict[length];
-      letterToGuess = this.getNextLetterToGuess(dict);      
+    let lastGuess = this.getLastGuess();
+
+
+    if(!lastGuess){
+      this.setWordDict(length);
+      dict = this.getWordDict();
+    }else {
+      this.setGuessedLetter(lastGuess);
+      let position = wordToGuess.indexOf(lastGuess);
+      console.info(position);
+      if(position !== -1){
+        dict = this.updateDictByLetter(this.getWordDict(), lastGuess, position);
+      }else {
+        dict = this.updateDictByLetter(this.getWordDict(),lastGuess);
+      }
     }
 
-    this.setLastGuess(letterToGuess);
+    letterToGuess = this.getNextLetterToGuess(dict,wordToGuess);      
+
     //make sure the letter be upper case;
     letterToGuess = letterToGuess.toUpperCase();
+    this.setLastGuess(letterToGuess);
 
     let data = {
       sessionId: sessionId,
@@ -281,6 +316,7 @@ class Savior {
         console.info(res);
         if(res.data && res.data.word) {
           let wordToGuess = res.data.word;
+          this.setLengthByWordToGuess(wordToGuess);
           this.setWordDict(wordToGuess.length);
           return this.makingGuessLoop(sessionId, wordToGuess);
         } else if(res.data && !res.data.word) { 

@@ -1,11 +1,8 @@
 let Savior = require('./Savior')
 
-let savior = new Savior("jcdby@hotmail.com");
 let args = process.argv.slice(2);
 
+let savior = new Savior(args[0],args[1]);
 
 
-
-args.forEach(function(element) {
-  console.log(element)
-}, this);
+savior.play();

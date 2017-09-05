@@ -2,11 +2,11 @@ let Savior = require('./Savior');
 
 let args = process.argv.slice(2);
 
-let plyerID = args[0];
-let dictFilePath = args[1] || './words_alpha.txt';
+let playerID = args[0];
+let dictFilePath = args[1] || './full_words.txt';
 
 
-let savior = new Savior(args[0],args[1]);
+let savior = new Savior(playerID, dictFilePath);
 
 
 savior.play();

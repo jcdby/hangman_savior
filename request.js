@@ -28,10 +28,11 @@ function request(data){
         res.on('data', (chunk) => {
           //when trying to make a guess and the guess is wrong, it should return a json including a message that shows "No more guess left",but always return a HTML response. 
           try {
-            logger.info(chunk);
             chunk = JSON.parse(chunk);
+            logger.info(chunk);
             resolve(chunk);
           }catch(e){
+            logger.info({message:'No more guess left'});
             resolve({message:'No more guess left'});
           }
         });

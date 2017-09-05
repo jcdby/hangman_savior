@@ -21,7 +21,7 @@ class Savior {
       backupFreq: 'ETAOINSHRDLUCMFWYPVBGKQJXZ', //备用字母频率数组
     };
     this.length = 0;
-    this.filePath = filePath || '';
+    this.filePath = filePath;
   }
 
   setWordFilePath(path){
@@ -290,12 +290,10 @@ class Savior {
   pre-condition: There is wordToGuess and the word is still including * letter.
   */
   makeGuess(sessionId, wordToGuess){
-    
     //when wordToGuess is not sent to makeGuess function correctly.
     if(!wordToGuess){
       throw new Error('There is no word to guess!');
     }
-
 
     let action = 'guessWord';
     //set the default next letter to guess to a
@@ -312,8 +310,6 @@ class Savior {
     }else {
       this.setGuessedLetter(lastGuess);
       let position = wordToGuess.indexOf(lastGuess);
-      console.log(`show the word to guess is ${wordToGuess}`);
-      console.log(`show me position ${position}`);
       if(position > -1){
         dict = this.updateDictByWordToGuess(this.getWordDict(), wordToGuess);
       }else {
@@ -327,16 +323,9 @@ class Savior {
     //make sure the letter be upper case;
     letterToGuess = letterToGuess.toUpperCase();
     this.setLastGuess(letterToGuess);
+    
 
-    let that = this;
-    console.info(`show me the gussed letters is ${that.getGuessedLetters()}`);
-    console.info(`show me the word dict us ${that.getWordDict()}`);
-    console.info(`the letter to guess is ${letterToGuess}`);
-    logger.info(`show me the gussed letters is ${that.getGuessedLetters()}`);
-    logger.info(`show me the word dict us ${that.getWordDict()}`);
-    logger.info(`the letter to guess is ${letterToGuess}`);
-
-    let data = {
+    const data = {
       sessionId: sessionId,
       action: action,
       guess: letterToGuess
@@ -346,8 +335,8 @@ class Savior {
   }
 
   getResult(sessionId){
-    let action = 'getResult';
-    let data = {
+    const action = 'getResult';
+    const data = {
       sessionId: sessionId,
       action: action
     };
@@ -363,8 +352,8 @@ class Savior {
     return this.getNextWord(sessionId)
       .then(res => {
         console.info(res);
-        logger.info(`response from next word is ${res}`);
-        //重置备用字母表。
+        logger.info(`response from next word is ${JSON.stringify(res)}`);
+        //重置备用字母表, guessedLetters, lastGuess。
         this.setBackupLetterFreq('ETAOINSHRDLUCMFWYPVBGKQJXZ');
         this.resetGuessedLetters();
         this.setLastGuess('');
@@ -386,7 +375,8 @@ class Savior {
   makingGuessLoop(sessionId, wordToGuess){
     return this.makeGuess(sessionId,wordToGuess)
              .then(res => {
-               console.info(res);
+               console.info(`After making guess, res is ${JSON.stringify(res)}`);
+               logger.info(`After making guess, res is ${JSON.stringify(res)}`);
                // 一个单词可以猜测的次数达到了上限。
                if(res.message && res.message === 'No more guess left'){
                  return this.gettingNextWordLoop(sessionId);
@@ -394,8 +384,6 @@ class Savior {
                  if(res.data && res.data.word && res.data.word.includes('*')){
                    return this.makingGuessLoop(sessionId, res.data.word);
                  }else {
-                   console.info(`Making guess right, start to another word!`);
-                   logger.info(`Making guess right, start to another word!`);
                    //当res.data.word不包含 * 的情况。代表猜单词正确的情况。
                    return this.gettingNextWordLoop(sessionId);
                  }
@@ -412,7 +400,7 @@ class Savior {
         console.info('start to play game!')
         console.info(res);
         logger.info('start to play game!')
-        logger.info(`response from start game request is  ${res}`);
+        logger.info(`response from start game request is ${JSON.stringify(res)}`);
 
         if(res.message && res.message === 'Player does not exist'){
           //由于提供错误的player ID，抛出异常。

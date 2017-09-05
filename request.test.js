@@ -3,6 +3,8 @@ describe('Request test.', () => {
 
   let sessionId = '';
   let request = require('./request.js');
+  let ar = args[t];
+  console.log(ar);
 
   test('Should return json from server.', () => {
   let data = {

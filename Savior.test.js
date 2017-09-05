@@ -66,7 +66,7 @@ describe('Savior Test', ()=>{
 
     test('Should not throw error when learnEnglish get a path(validated path string) parameter.', () => {
       expect(() => {
-        savior.learnEnglish('./words_alpha.txt')
+        savior.learnEnglish('./words_test.txt')
       }).not.toThrow();
     });
 
@@ -78,7 +78,7 @@ describe('Savior Test', ()=>{
 
 
     test('Should get knowledge about english.', () => {
-        let dict_file_path = './words_alpha.txt';
+        let dict_file_path = './words_test.txt';
         savior.learnEnglish(dict_file_path);
         let saviorKnowledge = savior.getKnowledge();
         expect(saviorKnowledge.dict).toBeInstanceOf(Object);

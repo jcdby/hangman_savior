@@ -236,6 +236,12 @@ class Savior {
 
 
   updateDictByWordToGuess(old_dict, wordToGuess){
+    if(!Array.isArray(old_dict)){
+      throw new Error('First parameter should be a array!');
+    };
+    if(arguments.length === 2 && typeof wordToGuess !== 'string'){
+      throw new Error('Second parameter should be a string');
+    };
     let reg = '';
     while(wordToGuess.includes('*')){
       wordToGuess = wordToGuess.replace('*','.');

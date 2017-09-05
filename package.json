@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "dev": "node app.js",
-    "test_watch": "jest --watch"
+    "test_watch": "jest --watch",
+    "test_coverage": "jest --coverage"
   },
   "keywords": [
     "hangman"

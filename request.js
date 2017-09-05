@@ -26,6 +26,7 @@ function request(data){
       let req = https.request(options,(res) => {
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
+          //when trying to make a guess and the guess is wrong, it should return a json including a message that shows "No more guess left",but always return a HTML response. 
           try {
             logger.info(chunk);
             chunk = JSON.parse(chunk);

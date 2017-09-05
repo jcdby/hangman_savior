@@ -5,7 +5,7 @@ describe('Savior Test', ()=>{
   let Savior;
   let savior;
   let wordToGuess; 
-  let playerId  = 'jcdby@hotmail.com'
+  let playerId  = 'example@hotmail.com';
 
   beforeEach(() => {
     Savior = require('./Savior');

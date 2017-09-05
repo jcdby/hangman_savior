@@ -5,7 +5,7 @@ const Console = require('console').Console;
 
 const output = fs.createWriteStream('./stdout.log');
 const errorOutput = fs.createWriteStream('./stderr.log');
-let console = new Console(output, errorOutput);
+let logger = new Console(output, errorOutput);
 
 
 class Savior {
@@ -241,7 +241,8 @@ class Savior {
       wordToGuess = wordToGuess.replace('*','.');
     }
     reg = wordToGuess;
-    console.log(`show me reg is ${reg}`)
+    console.log(`show me reg is ${reg}`);
+    logger.info(`show me reg is ${reg}`);
     let new_dict = [];
 
     reg = new RegExp(reg, 'i','g');
@@ -260,6 +261,7 @@ class Savior {
       playerID: playerID,
       action: action
     };
+
     this.learnEnglish(this.filePath);
 
     return request(data)
@@ -272,7 +274,6 @@ class Savior {
       sessionId: sessionId,
       action: action
     };    
-    this.resetGuessedLetters();
     
     return request(data);
 
@@ -297,7 +298,7 @@ class Savior {
     let dict = [];    
 
     let lastGuess = this.getLastGuess();
-
+    logger.info(`Show me the last guess before making guess: ${lastGuess}`);
 
     if(!lastGuess){
       this.setWordDict(length);
@@ -314,6 +315,7 @@ class Savior {
       }
     }
 
+
     letterToGuess = this.getNextLetterToGuess(dict,wordToGuess);      
 
     //make sure the letter be upper case;
@@ -322,7 +324,11 @@ class Savior {
 
     let that = this;
     console.info(`show me the gussed letters is ${that.getGuessedLetters()}`);
-    console.info(`the letter to guess is ${letterToGuess}`)
+    console.info(`show me the word dict us ${that.getWordDict()}`);
+    console.info(`the letter to guess is ${letterToGuess}`);
+    logger.info(`show me the gussed letters is ${that.getGuessedLetters()}`);
+    logger.info(`show me the word dict us ${that.getWordDict()}`);
+    logger.info(`the letter to guess is ${letterToGuess}`);
 
     let data = {
       sessionId: sessionId,
@@ -351,8 +357,15 @@ class Savior {
     return this.getNextWord(sessionId)
       .then(res => {
         console.info(res);
+        logger.info(`response from next word is ${res}`);
         //重置备用字母表。
         this.setBackupLetterFreq('ETAOINSHRDLUCMFWYPVBGKQJXZ');
+        this.resetGuessedLetters();
+        this.setLastGuess('');
+
+        logger.info(`reseted backup letter freq: ${this.getBackupLetterFreq()}`);
+        logger.info(`reseted guessed letters: ${this.getGuessedLetters()}`);
+
         if(res.data && res.data.word) {
           let wordToGuess = res.data.word;
           this.setLengthByWordToGuess(wordToGuess);
@@ -375,6 +388,8 @@ class Savior {
                  if(res.data && res.data.word && res.data.word.includes('*')){
                    return this.makingGuessLoop(sessionId, res.data.word);
                  }else {
+                   console.info(`Making guess right, start to another word!`);
+                   logger.info(`Making guess right, start to another word!`);
                    //当res.data.word不包含 * 的情况。代表猜单词正确的情况。
                    return this.gettingNextWordLoop(sessionId);
                  }
@@ -384,11 +399,15 @@ class Savior {
 
 
   play(){
-    let sessionID = '';
+    let sessionID = this.getSaviorId();
+    logger.info(`player session id is ${sessionID}`);
     return this.startGame()
       .then(res => {
         console.info('start to play game!')
         console.info(res);
+        logger.info('start to play game!')
+        logger.info(`response from start game request is  ${res}`);
+
         if(res.message && res.message === 'Player does not exist'){
           //由于提供错误的player ID，抛出异常。
           throw new Error(res.message);
@@ -401,7 +420,7 @@ class Savior {
         return this.gettingNextWordLoop(sessionId)
       })
       .then(() => {
-        console.info('start to getting result')
+        console.info('start to getting result');
         return this.getResult(sessionID);
       })
       .then(guess_result => {

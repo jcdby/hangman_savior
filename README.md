@@ -14,7 +14,7 @@ This test is based on the famous [Hangman Game](https://en.wikipedia.org/wiki/Ha
 - npm 3.10.10
 
 ## How to Run the Program
-- ### npm install
+- ### npm install （In case you want to test it.There is only one dependency which is jest. Or, you can just go to the next step.）
 - ### node app.js yourid requestURL [dict_path] (the default value of dict_path is ./full_words.txt,you could use your dict);
   - **yourid**: the playerID you get from Strikingly(confidential).
   - **requestURL**: the retuest url you get from Strikingly interview email(confidential).

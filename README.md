@@ -2,7 +2,6 @@
 This test is based on the famous [Hangman Game](https://en.wikipedia.org/wiki/Hangman_(game)). My task is to write a program to play Hangman, guessing words from Strikingly`s server through a RESTful API.
 
 
-
 ## Key Points to Play Hangman
 - The right english words list(The bigger the better!)
   - [Mieliestronk's list of more than](http://www.mieliestronk.com/wordlist.html)
@@ -14,13 +13,13 @@ This test is based on the famous [Hangman Game](https://en.wikipedia.org/wiki/Ha
 - node v6.11.0
 - npm 3.10.10
 
-## Instruction to Run the Program
+## How to Run the Program
 - ### npm install
 - ### node app.js yourid requestURL [dict_path] (the default value of dict_path is ./full_words.txt,you could use your dict);
-  - yourid: the playerID you get from Strikingly(confidential).
-  - requestURL: the retuest url you get from Strikingly interview email(confidential).
-  - dict_path: a english words list.(default is ./full_words.txt)
-  - eg: 
+  - **yourid**: the playerID you get from Strikingly(confidential).
+  - **requestURL**: the retuest url you get from Strikingly interview email(confidential).
+  - **dict_path**: a english words list.(default is ./full_words.txt)
+  - **eg**: 
     - node run app.js yourid@strikingly.com strikingly.com/sth/sth 
     - OR node run app.js yourid@strikingly.com strikingly.com/sth/sth ./full_words.txt
 
@@ -54,3 +53,10 @@ Please go the [here](https://github.com/joycehan/strikingly-interview-test-instr
 - totalWrongGuessCount:175,
 - score:1425,
 - datetime:"2017-09-05 21:50:00"
+
+## Besides
+  - Methodology: TDD development.<br />
+  Used TDD to develop my project to make sure that ever function acts as expected.<br />   
+  - Backup letter frequency.<br />
+  In case the volumn of the dictionary we added is less than that of Strikingly`s, which will make our savior(out program) has no letter to guess sometimes, I added a backup frequency to make sure that savior always can guess the next letter. 
+  

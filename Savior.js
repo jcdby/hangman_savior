@@ -10,7 +10,7 @@ let logger = new Console(output, errorOutput);
 
 class Savior {
 
-  constructor(saviorId, filePath) {
+  constructor(saviorId, filePath, req_url) {
     this.saviorId = saviorId || ''; 
     this.myKnowledge = {
       dict: {},//dict 包含按长度分类的子字典。
@@ -21,7 +21,8 @@ class Savior {
       backupFreq: 'ETAOINSHRDLUCMFWYPVBGKQJXZ', //备用字母频率数组
     };
     this.length = 0;
-    this.filePath = filePath;
+    this.filePath = filePath || '';
+    this.req_url = req_url || '';
   }
 
   setWordFilePath(path){
@@ -62,6 +63,14 @@ class Savior {
   
   resetGuessedLetters() {
     this.myKnowledge.guessedLetter = [];
+  }
+
+  setRequestURL(url) {
+    this.req_url = url;
+  }
+
+  getRequestURL() {
+    return this.req_url;
   }
 
 
@@ -165,8 +174,8 @@ class Savior {
     }
 
 
-    let readed_string = fs.readFileSync(path, 'utf-8');
-    let dict = readed_string.split(/\r|\n/);
+    const readed_string = fs.readFileSync(path, 'utf-8');
+    const dict = readed_string.split(/\r|\n/);
 
     let dictByLength = {};
 
@@ -237,7 +246,7 @@ class Savior {
 
   updateDictByWordToGuess(old_dict, wordToGuess){
     if(!Array.isArray(old_dict)){
-      throw new Error('First parameter should be a array!');
+      throw new Error('First parameter should be an array!');
     };
     if(arguments.length === 2 && typeof wordToGuess !== 'string'){
       throw new Error('Second parameter should be a string');
@@ -270,7 +279,7 @@ class Savior {
 
     this.learnEnglish(this.filePath);
 
-    return request(data)
+    return request(this.req_url, data)
   }
 
   getNextWord(sessionId){
@@ -281,7 +290,7 @@ class Savior {
       action: action
     };    
     
-    return request(data);
+    return request(this.req_url, data);
 
   }
 
@@ -331,7 +340,7 @@ class Savior {
       guess: letterToGuess
     };
     
-    return request(data);
+    return request(this.req_url, data);
   }
 
   getResult(sessionId){
@@ -342,7 +351,7 @@ class Savior {
     };
 
 
-    return request(data);
+    return request(this.req_url, data);
 
   }
 

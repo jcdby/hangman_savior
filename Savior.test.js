@@ -134,9 +134,21 @@ describe('Savior Test', ()=>{
       expect(() => {
         savior.setLengthByWordToGuess(2);
       }).toThrowError('The parameter of setLengthByWordToGuess should be a string.')
-    })
+    });
 
 
+    test('Should throw error when the first parameter of the updateDictByWordToGuess is not an array.', () => {
+      expect(() => {
+        savior.updateDictByWordToGuess(2, 'fdf');
+      }).toThrowError('First parameter should be an array!');
+    });
+
+    test('Should throw error when the sec parameter of the updateDictByWordToGuess is not a string.', () => {
+      expect(() => {
+        savior.updateDictByWordToGuess(new Array(), 2);
+      }).toThrowError('Second parameter should be a string');
+    });
+     
 
     test('Should update savior`s dict by the wrong letter gussed.', () => {
       let old_dict = ['good','a','bb','cooler','sbfjoijeifj','fjkdjjfd','sb','wordl', 'word','world'];
@@ -161,6 +173,7 @@ describe('Savior Test', ()=>{
 
     test('Should correctly return the most frequent letter when there is no lastGuess.', () => {
       let lastGuess = savior.getLastGuess();
+      savior.setRequestURL('requestURL');
       //before making guess, the last guess was empty.
       expect(savior.getLastGuess()).toEqual('');
       let wordToGuess = '****';
@@ -182,6 +195,7 @@ describe('Savior Test', ()=>{
     test('Should correctly return the most frequent letter when there is lastGuess and the word to guess includes the same letter as lastGuess.', () => {
       //the letter the previous makeGuess guessed. 
       let expect_lastGuess = 'A';
+      savior.setRequestURL('requestURL');
       savior.setLastGuess(expect_lastGuess);
 
       
@@ -220,6 +234,7 @@ describe('Savior Test', ()=>{
       //the letter the previous makeGuess guessed. 
       let expect_lastGuess = 'A';
       savior.setLastGuess(expect_lastGuess);
+      savior.setRequestURL('requestURL');
 
       
       let wordToGuess = '****';
@@ -373,12 +388,13 @@ describe('Savior Test', ()=>{
     //Start of Describe 5
 
     test('Savior should get right dict after calling startGame.', () => {
-      let wordFilePath = './words_test.txt';
+      const wordFilePath = './words_test.txt';
       savior.setWordFilePath(wordFilePath);
+      savior.setRequestURL('https://reqres.in/api/users');
 
-      let fs = require('fs');
-      let read_string = fs.readFileSync(wordFilePath,'utf-8');
-      let readed_dict = read_string.split(/\r|\n/);
+      const fs = require('fs');
+      const read_string = fs.readFileSync(wordFilePath,'utf-8');
+      const readed_dict = read_string.split(/\r|\n/);
       let expect_dict = {};
 
       readed_dict.forEach(function (element) {
@@ -386,9 +402,13 @@ describe('Savior Test', ()=>{
           expect_dict[element.length] = [];
         }
         expect_dict[element.length].push(element);
-      })
+      });
 
-      jest.mock('./request.js', () => {
+      // jest.mock('./request.js', () => {
+      //   return 0;
+      // });
+
+      jest.doMock('./request.js', () => {
         return jest.fn(() => {
           return new Promise((resolve) =>{
             setTimeout(function() {

@@ -1,21 +1,28 @@
 
 describe('Request test.', () => {
 
-  let sessionId = '';
-  let request = require('./request.js');
-  let ar = args[t];
-  console.log(ar);
+  const request = require('./request.js');
 
-  test('Should return json from server.', () => {
-  let data = {
-      playerID: 'test@example.com',
-      action: 'startGame'
+  test('Should return the right response from mock api server.', () => {
+    const API_URL = "https://reqres.in/api/users";
+    const data = {
+      name: "jincheng",
+      job: "Software Engineer"
     };
-    let expect_result = {
-      message: 'Player does not exist'
-    };
-    return expect(request(data)).resolves.toEqual(expect_result);
-  })
+
+    const expect_result = expect.objectContaining({
+      name: "jincheng",
+      job: 'Software Engineer',
+      id: expect.any(String),
+      createdAt: expect.any(String)
+    });
+
+    return expect(request(API_URL, data)).resolves.toEqual(expect_result);
+    
+  });
+
+
+  
 
 
 

@@ -1,12 +1,12 @@
-let Savior = require('./Savior');
+const Savior = require('./Savior');
 
-let args = process.argv.slice(2);
+const args = process.argv.slice(2)
 
-let playerID = args[0];
-let dictFilePath = args[1] || './full_words.txt';
+const playerID = args[0];
+const req_url = args[1];
+const dictFilePath = args[2] || 'full_words.txt';
 
-
-let savior = new Savior(playerID, dictFilePath);
+let savior = new Savior(playerID, dictFilePath, req_url);
 
 
 savior.play();

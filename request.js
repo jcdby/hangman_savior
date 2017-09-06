@@ -1,5 +1,6 @@
 const https = require('https');
 const fs = require('fs');
+const url = require('url');
 const Console = require('console').Console;
 
 const output = fs.createWriteStream('./stdout_request.log');
@@ -7,13 +8,20 @@ const errorOutput = fs.createWriteStream('./stderr_request.log');
 const logger = new Console(output, errorOutput);
 
 
-function request(data){
+
+
+function request(req_url, data){
     let json_data = JSON.stringify(data);
+    const req_ulr = url.parse(req_url);
+    const protocol = req_ulr.protocol;
+    const hostname = req_ulr.hostname;
+    const path = req_ulr.path;
+
 
     let options = {
-      protocol: "https:",
-      hostname: "strikingly-hangman.herokuapp.com",
-      path: "/game/on",
+      protocol: protocol,
+      hostname: hostname,
+      path: path,
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",

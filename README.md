@@ -14,13 +14,15 @@ This test is based on the famous [Hangman Game](https://en.wikipedia.org/wiki/Ha
 - node v6.11.0
 - npm 3.10.10
 
-## Instruction to Run
+## Instruction to Run the Program
 - ### npm install
 - ### node app.js yourid requestURL [dict_path] (the default value of dict_path is ./full_words.txt,you could use your dict);
   - yourid: the playerID you get from Strikingly(confidential).
   - requestURL: the retuest url you get from Strikingly interview email(confidential).
   - dict_path: a english words list.(default is ./full_words.txt)
-  - eg: node run app.js yourid@strikingly.com strikingly.com/sth/sth OR node run app.js yourid@strikingly.com strikingly.com/sth/sth ./full_words.txt
+  - eg: 
+    - node run app.js yourid@strikingly.com strikingly.com/sth/sth 
+    - OR node run app.js yourid@strikingly.com strikingly.com/sth/sth ./full_words.txt
 
 ## Test Coverage Results
 - npm run test_coverage

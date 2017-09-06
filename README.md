@@ -16,7 +16,7 @@ This test is based on the famous [Hangman Game](https://en.wikipedia.org/wiki/Ha
 
 ## Instruction to Run
 - ### npm install
-- ### node app.js [yourid] [requestURL] [dict_path] (the default value of dict_path is ./full_words.txt,you could use your dict);
+- ### node app.js yourid requestURL [dict_path] (the default value of dict_path is ./full_words.txt,you could use your dict);
   - yourid: the playerID you get from Strikingly(confidential).
   - requestURL: the retuest url you get from Strikingly interview email(confidential).
   - dict_path: a english words list.(default is ./full_words.txt)
